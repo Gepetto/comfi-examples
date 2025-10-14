@@ -11,7 +11,7 @@ If you are not sure how to use it, you can use the simple standard python way.
 
 ```bash
 git clone https://github.com/Gepetto/comfi-examples.git
-cd comfi-usage
+cd comfi-examples
 ```
 
 2. **Virtual environment**
