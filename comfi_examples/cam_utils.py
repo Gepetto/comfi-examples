@@ -1,4 +1,3 @@
-import subprocess
 import numpy as np
 import os
 import cv2 as cv
@@ -36,7 +35,6 @@ def decompose_homogeneous(H):
     return R, T
 
 
-import numpy as np
 
 
 def get_camera_params(Ks, Ds, Rs=None, Ts=None):

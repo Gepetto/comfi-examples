@@ -4,7 +4,6 @@ import numpy as np
 from .linear_algebra_utils import col_vector_3D
 from example_robot_data import load
 from .linear_algebra_utils import (
-    col_vector_3D,
     transform_to_global_frame,
     transform_to_local_frame,
     orthogonalize_matrix,
@@ -413,7 +412,7 @@ def compute_joint_centers_from_mks(markers):
             jcp_g["Left_Shoulder"], pelvis_position, pelvis_rotation
         )
         jcp["Neck"] = compute_uptrunk(markers_local["C7"], markers_local["SJN"])
-    except KeyError as e:
+    except KeyError:
         pass
 
     # ---- Elbows ----

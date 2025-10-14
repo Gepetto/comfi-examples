@@ -3,7 +3,6 @@ import meshcat.transformations as tf
 import numpy as np
 import pinocchio as pin
 import meshcat
-import imageio
 import time
 
 
