@@ -4,6 +4,7 @@ from scipy import linalg
 
 # from scipy.spatial.transform import Rotation as R
 
+
 def DLT(projections, points):
     """
     Perform Direct Linear Transformation (DLT) for adaptive triangulation.
@@ -23,21 +24,22 @@ def DLT(projections, points):
     numpy.ndarray
         A 1D array of length 3 representing the 3D coordinates of the point.
     """
-    
-    A=[]
+
+    A = []
     for i in range(len(projections)):
-        P=projections[i]
+        P = projections[i]
         point = points[i]
 
-        for j in range (len(point)):
-            A.append(point[j][1]*P[2,:] - P[1,:])
-            A.append(P[0,:] - point[j][0]*P[2,:])
+        for j in range(len(point)):
+            A.append(point[j][1] * P[2, :] - P[1, :])
+            A.append(P[0, :] - point[j][0] * P[2, :])
 
-    A = np.array(A).reshape((-1,4))
+    A = np.array(A).reshape((-1, 4))
     B = A.transpose() @ A
-    _, _, Vh = np.linalg.svd(B, full_matrices = False)
+    _, _, Vh = np.linalg.svd(B, full_matrices=False)
 
-    return Vh[3,0:3]/Vh[3,3]
+    return Vh[3, 0:3] / Vh[3, 3]
+
 
 def triangulate_points(keypoints_list, mtxs, dists, projections):
     """
@@ -51,66 +53,77 @@ def triangulate_points(keypoints_list, mtxs, dists, projections):
         numpy.ndarray: An array of 3D points triangulated from the input 2D keypoints.
     """
 
-    p3ds_frame=[]
+    p3ds_frame = []
     undistorted_points = []
 
     for ii in range(len(keypoints_list)):
-        points = keypoints_list[ii] 
+        points = keypoints_list[ii]
         distCoeffs_mat = np.array([dists[ii]]).reshape(-1, 1)
-        points_undistorted = cv2.undistortPoints(np.array(points).reshape(-1, 1, 2), mtxs[ii], distCoeffs_mat)
+        points_undistorted = cv2.undistortPoints(
+            np.array(points).reshape(-1, 1, 2), mtxs[ii], distCoeffs_mat
+        )
         undistorted_points.append(points_undistorted)
 
     for point_idx in range(26):
-        points_per_point = [undistorted_points[i][point_idx] for i in range(len(undistorted_points))]
+        points_per_point = [
+            undistorted_points[i][point_idx] for i in range(len(undistorted_points))
+        ]
         _p3d = DLT(projections, points_per_point)
         p3ds_frame.append(_p3d)
 
     return np.array(p3ds_frame)
 
+
 def triangulate_offline(uvs, mtxs, dists, projections):
     """Triangulate and transform keypoints for all frames."""
     keypoints_in_world_list = []
     num_frames = len(uvs[0])
-    
+
     for frame_idx in range(num_frames):
         points_2d_per_frame = [uv[frame_idx] for uv in uvs]
-        p3d_frame = triangulate_points(points_2d_per_frame, mtxs, dists, projections) #3d is expressed in cam0 frame
+        p3d_frame = triangulate_points(
+            points_2d_per_frame, mtxs, dists, projections
+        )  # 3d is expressed in cam0 frame
         keypoints_in_world_list.append(p3d_frame.flatten().tolist())
-    
+
     return keypoints_in_world_list
 
+
 def DLT_adaptive(projections, points, idx_cams_used: list):
-    A=[]
+    A = []
     for i in range(len(idx_cams_used)):
-        P=projections[idx_cams_used[i]]
+        P = projections[idx_cams_used[i]]
         point = points[i]
         # print ('point',point)
 
-        for j in range (len(point)):
-            A.append(point[j][1]*P[2,:] - P[1,:])
-            A.append(P[0,:] - point[j][0]*P[2,:])
+        for j in range(len(point)):
+            A.append(point[j][1] * P[2, :] - P[1, :])
+            A.append(P[0, :] - point[j][0] * P[2, :])
 
-    A = np.array(A).reshape((-1,4))
-    #print('A: ')
-    #print(A)
+    A = np.array(A).reshape((-1, 4))
+    # print('A: ')
+    # print(A)
     B = A.transpose() @ A
-    _, _, Vh = linalg.svd(B, full_matrices = False)
+    _, _, Vh = linalg.svd(B, full_matrices=False)
 
     # print('Triangulated point: ')
     # print(Vh[3,0:3]/Vh[3,3])
-    return Vh[3,0:3]/Vh[3,3]
+    return Vh[3, 0:3] / Vh[3, 3]
 
-def is_camera_used(score: float, threshold: float)->bool:
+
+def is_camera_used(score: float, threshold: float) -> bool:
     if score > threshold:
         return True
     else:
         return False
 
-def which_cameras_used(scores: list, threshold: float)->list:
+
+def which_cameras_used(scores: list, threshold: float) -> list:
     which_cam_used_list = []
     for score in scores:
         which_cam_used_list.append(is_camera_used(score, threshold))
     return which_cam_used_list
+
 
 def index_cameras_used(which_cam_used_list: list):
     index_cameras_used = []
@@ -119,16 +132,19 @@ def index_cameras_used(which_cam_used_list: list):
             index_cameras_used.append(i)
     return index_cameras_used
 
-def triangulate_points_adaptive(uvs, mtxs, dists, projections, scores: list, threshold: float):
-    num_frames = len(uvs[0])  
-    num_points = len(uvs[0][0])  
+
+def triangulate_points_adaptive(
+    uvs, mtxs, dists, projections, scores: list, threshold: float
+):
+    num_frames = len(uvs[0])
+    num_points = len(uvs[0][0])
     p3ds_frames = []
     keypoints_in_cam0_list = []
 
     for frame_idx in range(num_frames):
         which_cam_used_list = which_cameras_used(scores[frame_idx], threshold)
-        p3ds_frame=[]
-        points_2d_per_frame = [uv[frame_idx] for uv in uvs] 
+        p3ds_frame = []
+        points_2d_per_frame = [uv[frame_idx] for uv in uvs]
 
         undistorted_points = []
 
@@ -137,17 +153,19 @@ def triangulate_points_adaptive(uvs, mtxs, dists, projections, scores: list, thr
         for cam_idx in idx_cams_used:
             points = points_2d_per_frame[cam_idx]
             distCoeffs_mat = np.array([dists[cam_idx]]).reshape(-1, 1)
-            points_undistorted = cv2.undistortPoints(np.array(points).reshape(-1, 1, 2), mtxs[cam_idx], distCoeffs_mat)
+            points_undistorted = cv2.undistortPoints(
+                np.array(points).reshape(-1, 1, 2), mtxs[cam_idx], distCoeffs_mat
+            )
             undistorted_points.append(points_undistorted)
 
         for point_idx in range(num_points):
-            points_per_point = [undistorted_points[i][point_idx] for i in range(len(undistorted_points))]
+            points_per_point = [
+                undistorted_points[i][point_idx] for i in range(len(undistorted_points))
+            ]
             _p3d = DLT_adaptive(projections, points_per_point, idx_cams_used)
             p3ds_frame.append(_p3d)
 
-        
         # On ajoute la version aplatie
         keypoints_in_cam0_list.append(np.array(p3ds_frame).flatten().tolist())
 
     return keypoints_in_cam0_list
-
