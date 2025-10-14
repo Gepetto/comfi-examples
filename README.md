@@ -12,23 +12,27 @@ Scripts to use and showcase the data from the COMFI dataset
 
 ## Installation
 
+This project is packaged with [uv](https://docs.astral.sh/uv).
+If you are not sure how to use it, you can use the simple standard python way.
+
 1. **Clone the repository**
 
 ```bash
 git clone https://github.com/Gepetto/comfi-examples.git
 cd comfi-usage
 ```
+
 2. **Virtual environment**
 ```bash
-python3 -m venv comfi_env
-source comfi_env/bin/activate
+python3 -m venv .venv
+source .venv/bin/activate
 ```
 
-3. **Install dependencies**
+3. **Install the project**
 ```bash
-pip install --upgrade pip
-pip install -r requirements.txt
+pip install .
 ```
+
 ### Usage
 
 This repository provides scripts for processing and visualizing COMFI dataset data. Visualizations are performed using Meshcat, which by default launches a local server (typically at http://127.0.0.1:7000
@@ -41,7 +45,7 @@ All data can be visualized and processed by specifying the subject ID, task, and
 Run the RTMlib pose estimator (YOLOX + RTMPose-M with 26 keypoints), which can display the results in real time (this option can be disabled). At the end of the run, an output video with the skeleton overlay and a CSV file containing both the average score and the keypoints are saved in the output folder.
 
 ```bash
-python scripts/human_pose_estimator/run_pose_estimator.py \
+./scripts/human_pose_estimator/run_pose_estimator.py \
     --id 1012 \
     --task RobotWelding
 ```
@@ -49,16 +53,16 @@ python scripts/human_pose_estimator/run_pose_estimator.py \
 
 Triangulate keypoints from multiple camera views (can be done with any set of cameras, minimum 2). The triangulation results are saved in the output folder.
 ```bash
-python scripts/run_triangulation.py \
+./scripts/run_triangulation.py \
     --id 1012 \
     --task RobotWelding
 ```
 2.1 **Visualize triangulated data:**
 ```bash
-python scripts/visualization/viz_jcp.py \
-    --mode hpe \
-    --id 4279 \
+./scripts/visualization/viz_jcp.py \
+    --id 1012 \
     --task RobotWelding \
+    --mode hpe \
     --nb-cams 4 \
     --freq 40 \
     --start 0 \
@@ -66,7 +70,7 @@ python scripts/visualization/viz_jcp.py \
 ```
 3. **Visualize mocap data (markers and joint center positions"JCP") at either 40 Hz or 100 Hz.**
 ```bash
-python scripts/visualization/viz_mks.py \
+./scripts/visualization/viz_mks.py \
     --id 1012 \
     --task RobotWelding \
     --freq 40 \
@@ -81,7 +85,7 @@ Visualize multimodal data and animate motion capture sequences, including refere
 
 **Note:** Robot and force data are not available for all tasks. Additionally, robot data is only aligned with videos at 40 Hz.
 ```bash
-python scripts/visualization/viz_all_data.py \
+./scripts/visualization/viz_all_data.py \
      --id 1012 \
      --task RobotWelding \
      --freq 40 \
@@ -94,7 +98,7 @@ python scripts/visualization/viz_all_data.py \
 
 The extracted JCP are saved in the output folder.
 ```bash
-python scripts/get_jcp_from_mocap_markers.py \
+./scripts/get_jcp_from_mocap_markers.py \
     --id 1012 \
     --task RobotWelding \
     --freq 40 \
@@ -105,7 +109,7 @@ python scripts/get_jcp_from_mocap_markers.py \
 
 Performs a Procrustes alignment between JCP Mocap and JCP HPE. The newly aligned JCP are saved in the output folder.
 ```bash
-python scripts/run_procruste_alignement.py \
+./scripts/run_procruste_alignement.py \
     --id 1012 \
     --task RobotWelding \
     --nb-cams 4
