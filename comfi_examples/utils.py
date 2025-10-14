@@ -66,7 +66,6 @@ def udp_csv_to_dataframe(csv_path, marker_names):
         if not line:
             continue  # skip empty lines
         parts = line.split(",")
-        timestamp = parts[0]
         udp_values = [float(val) for val in parts[2:]]
         all_rows.append(udp_values)
 
@@ -232,7 +231,7 @@ def load_all_data(paths, start_sample: int = 0, converter: float = 1000.0):
         jcp_dict_hpe, start_sample_jcp_dict_hpe = read_mks_data(
             jcp_raw_hpe, start_sample=start_sample, converter=converter
         )
-        jcp_hpe = [
+        _jcp_hpe = [
             start_sample_jcp_dict_hpe[name] for name in start_sample_jcp_dict_hpe.keys()
         ]
         jcp_names_hpe = [name + "_hpe" for name in start_sample_jcp_dict_hpe.keys()]

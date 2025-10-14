@@ -35,8 +35,6 @@ def decompose_homogeneous(H):
     return R, T
 
 
-
-
 def get_camera_params(Ks, Ds, Rs=None, Ts=None):
     """
     Build camera parameters for N cameras.
@@ -288,7 +286,7 @@ def load_camera_parameters(
     R_ref, T_ref, _, _ = load_transformation(
         os.path.join(extrinsics_dir, f"cam_to_world/camera_{cam_ref}/soder.txt")
     )
-    SE3_ref = pin.SE3(R_ref, T_ref)
+    _SE3_ref = pin.SE3(R_ref, T_ref)
 
     # Load extrinsics for other cameras
     for cam_id in camera_ids[1:]:

@@ -57,7 +57,7 @@ class Robot(RobotWrapper):
                 root_joint=pin.JointModelFreeFlyer(),
             )
 
-        if freeflyer_ori is not None and isFext == True:
+        if freeflyer_ori is not None and isFext:
             self.model.jointPlacements[
                 self.model.getJointId("root_joint")
             ].rotation = freeflyer_ori
@@ -126,7 +126,7 @@ def get_virtual_pelvis_pose(mks_positions):
 
     center_PSIS = (mks_positions["RPSI"] + mks_positions["LPSI"]).reshape(3, 1) / 2.0
     center_ASIS = (mks_positions["RASI"] + mks_positions["LASI"]).reshape(3, 1) / 2.0
-    center = (
+    _center = (
         mks_positions["RASI"]
         + mks_positions["LASI"]
         + mks_positions["RPSI"]

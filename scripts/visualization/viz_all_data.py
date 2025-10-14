@@ -530,8 +530,6 @@ def main():
 
     # read all data
     payload = load_all_data(paths, start_sample=0, converter=1000.0)
-    mks_dict = payload["mks_dict"]
-    mks_names = payload["mks_names"]
     q_ref = payload["q_ref"]
     q_robot = payload["q_robot"]
     t_cam = payload["t_cam"]

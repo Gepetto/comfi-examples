@@ -128,7 +128,7 @@ def which_cameras_used(scores: list, threshold: float) -> list:
 def index_cameras_used(which_cam_used_list: list):
     index_cameras_used = []
     for i in range(len(which_cam_used_list)):
-        if which_cam_used_list[i] == True:
+        if which_cam_used_list[i]:
             index_cameras_used.append(i)
     return index_cameras_used
 
@@ -138,7 +138,6 @@ def triangulate_points_adaptive(
 ):
     num_frames = len(uvs[0])
     num_points = len(uvs[0][0])
-    p3ds_frames = []
     keypoints_in_cam0_list = []
 
     for frame_idx in range(num_frames):

@@ -350,7 +350,6 @@ def animate(
             opacity=0.95,
         )
 
-    images = []
     # Mapping capteurs -> plateformes
     sensor_mapping = {1: 0, 2: 1, 3: 2}
 
