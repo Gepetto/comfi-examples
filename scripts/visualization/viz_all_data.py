@@ -1,4 +1,5 @@
 #!/usr/bin/env python3
+import os
 import argparse
 from pathlib import Path
 
@@ -187,7 +188,7 @@ def parse_args():
                    help="ID (e.g., 1012)")
     p.add_argument("--task", required=True,
                    help="Task name (e.g., RobotWelding)")
-    p.add_argument("--comfi-root", required=True,
+    p.add_argument("--comfi-root", default=Path(os.environ.get("COMFI_ROOT", "COMFI")),
                    help="Path to COMFI dataset root.")
     p.add_argument("--freq", type=int, choices=[40, 100], required=True,
                    help="Sampling frequency: 40 (aligned) or 100 (raw).")

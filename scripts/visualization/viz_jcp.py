@@ -1,4 +1,5 @@
 #!/usr/bin/env python3
+import os
 import argparse
 from pathlib import Path
 import numpy as np
@@ -41,7 +42,7 @@ def parse_args():
                    help="Stop frame index (exclusive). Default: None (till end)")
 
 
-    p.add_argument("--comfi-root", help="Path to comfi root directory (only for jcp_mocap)")
+    p.add_argument("--comfi-root",default=Path(os.environ.get("COMFI_ROOT", "COMFI")), help="Path to comfi root directory (only for jcp_mocap)")
     p.add_argument("--nb-cams", type=int, help="Number of cameras (only for jcp_hpe)")
 
 

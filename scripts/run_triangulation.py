@@ -1,4 +1,5 @@
 #!/usr/bin/env python3
+import os
 import argparse
 from pathlib import Path
 import numpy as np
@@ -42,7 +43,7 @@ def parse_args():
                    help="Subject IDs (space-separated), e.g., --id 1012 1118")
     p.add_argument("--task", dest="tasks", nargs="+", required=True,
                    help="Task names (space-separated), e.g., --task RobotWelding Lifting")
-    p.add_argument("--comfi-root", required=True,
+    p.add_argument("--comfi-root", default=Path(os.environ.get("COMFI_ROOT", "COMFI")),
                    help="Path to COMFI dataset root.")
     p.add_argument("--cams", dest="cam_ids", nargs="+", type=int, choices=DEFAULT_CAM_IDS,
                    default=DEFAULT_CAM_IDS,

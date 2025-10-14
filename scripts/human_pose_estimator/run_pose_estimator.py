@@ -30,7 +30,7 @@ def parse_args():
                    help="Subject IDs (space-separated), e.g., --id 1012 1118")
     p.add_argument("--task", dest="tasks", nargs="+", required=True,
                    help="Task names (space-separated), e.g., --task RobotWelding Lifting")
-    p.add_argument("--comfi-root", required=True,
+    p.add_argument("--comfi-root", default=Path(os.environ.get("COMFI_ROOT", "COMFI")),
                    help="Path to COMFI dataset root.")
     p.add_argument("--show_realtime", action='store_false', default=True,
                    help="Show the result in realtime. Default: True")

@@ -43,8 +43,7 @@ Run the RTMlib pose estimator (YOLOX + RTMPose-M with 26 keypoints), which can d
 ```bash
 python scripts/human_pose_estimator/run_pose_estimator.py \
     --id 1012 \
-    --task RobotWelding \
-    --comfi-root ./COMFI
+    --task RobotWelding
 ```
 2. **Triangulation and visualization**
 
@@ -52,8 +51,7 @@ Triangulate keypoints from multiple camera views (can be done with any set of ca
 ```bash
 python scripts/run_triangulation.py \
     --id 1012 \
-    --task RobotWelding \
-    --comfi-root ./COMFI
+    --task RobotWelding
 ```
 2.1 **Visualize triangulated data:**
 ```bash
@@ -71,7 +69,6 @@ python scripts/visualization/viz_jcp.py \
 python scripts/visualization/viz_mks.py \
     --id 1012 \
     --task RobotWelding \
-    --comfi-root ./COMFI \
     --freq 40 \
     --mkset est \
     --with_jcp \
@@ -87,7 +84,6 @@ Visualize multimodal data and animate motion capture sequences, including refere
 python scripts/visualization/viz_all_data.py \
      --id 1012 \
      --task RobotWelding \
-     --comfi-root ./COMFI \
      --freq 40 \
      --start 100 \
      --with-jcp-hpe \ (optional)
@@ -101,7 +97,6 @@ The extracted JCP are saved in the output folder.
 python scripts/get_jcp_from_mocap_markers.py \
     --id 1012 \
     --task RobotWelding \
-    --comfi-root ./COMFI \
     --freq 40 \
     --mkset est
 
@@ -113,6 +108,5 @@ Performs a Procrustes alignment between JCP Mocap and JCP HPE. The newly aligned
 python scripts/run_procruste_alignement.py \
     --id 1012 \
     --task RobotWelding \
-    --comfi-root ./COMFI \
     --nb-cams 4
 ```
