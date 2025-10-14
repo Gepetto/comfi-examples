@@ -15,7 +15,7 @@ Scripts to use and showcase the data from the COMFI dataset
 1. **Clone the repository**
 
 ```bash
-git clone https://github.com/MaximeSabbah/comfi-usage.git
+git clone https://github.com/Gepetto/comfi-examples.git
 cd comfi-usage
 ```
 2. **Virtual environment**
@@ -34,14 +34,14 @@ pip install -r requirements.txt
 This repository provides scripts for processing and visualizing COMFI dataset data. Visualizations are performed using Meshcat, which by default launches a local server (typically at http://127.0.0.1:7000
 ) to stream the visualizations directly in your browser.
 
-All data can be visualized and processed by specifying the subject ID, task, and other options available for each script (see python script.py --help for details).
+All data can be visualized and processed by specifying the subject ID, task, and other options available for each script (see python script.py --help for details). All the commands set to launch the code examples must be used from the repository root.
 
 1. **Human pose estimation (HPE)**
 
 Run the RTMlib pose estimator (YOLOX + RTMPose-M with 26 keypoints), which can display the results in real time (this option can be disabled). At the end of the run, an output video with the skeleton overlay and a CSV file containing both the average score and the keypoints are saved in the output folder.
 
 ```bash
-python run_pose_estimator.py \
+python scripts/human_pose_estimator/run_pose_estimator.py \
      --id 1012 \
      --task RobotWelding \
      --comfi-root /path/to/COMFI
@@ -50,7 +50,7 @@ python run_pose_estimator.py \
 
 Triangulate keypoints from multiple camera views (can be done with any set of cameras, minimum 2). The triangulation results are saved in the output folder.
 ```bash
-python run_triangulation.py \
+python scripts/run_triangulation.py \
     --id 4279 \
     --task RobotWelding \
     --nb-cams 4
@@ -68,7 +68,7 @@ python scripts/visualization/viz_jcp.py \
 ```
 3. **Visualize mocap data (markers and joint center positions"JCP") at either 40 Hz or 100 Hz.**
 ```bash
-python viz_mks.py \
+python scripts/visualization/viz_mks.py \
     --id 1012 \
     --task RobotWelding \
     --comfi-root /path/to/COMFI \
@@ -98,7 +98,7 @@ python scripts/visualization/viz_all_data.py \
 
 The extracted JCP are saved in the output folder.
 ```bash
-python get_jcp_from_mocap_markers.py \
+python scripts/get_jcp_from_mocap_markers.py \
     --id 1012 \
     --task RobotWelding \
     --comfi-root /path/to/COMFI \
