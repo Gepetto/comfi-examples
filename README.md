@@ -1,12 +1,4 @@
-## Data Organization
-
-Data from Zenodo (https://zenodo.org/records/17223909) should be downloaded and organized as shown in the following diagram:
-
-![COMFI Organization](images/comfi_organisation.pdf)
-
-In particular, we recommend users to extract all the videos zip files into a same videos folder located into COMFI and to put the whole dataset into the present repository.
-
-# comfi-usage
+# comfi-example
 
 Scripts to use and showcase the data from the COMFI dataset
 
@@ -28,7 +20,7 @@ python3 -m venv .venv
 source .venv/bin/activate
 ```
 
-3. **Install the project**
+3. **Install dependencies**
 ```bash
 pip install .
 ```
@@ -40,6 +32,15 @@ This repository provides scripts for processing and visualizing COMFI dataset da
 
 All data can be visualized and processed by specifying the subject ID, task, and other options available for each script (see python script.py --help for details). All the commands set to launch the code examples must be used from the repository root.
 
+0. **Download and extract dataset**
+
+Data from Zenodo (https://zenodo.org/records/17223909) should be downloaded and organized as shown [COMFI Organization](images/comfi_organisation.pdf).
+A script is provided for this:
+
+```bash
+./scripts/download.py
+```
+
 1. **Human pose estimation (HPE)**
 
 Run the RTMlib pose estimator (YOLOX + RTMPose-M with 26 keypoints), which can display the results in real time (this option can be disabled). At the end of the run, an output video with the skeleton overlay and a CSV file containing both the average score and the keypoints are saved in the output folder.
@@ -49,6 +50,7 @@ Run the RTMlib pose estimator (YOLOX + RTMPose-M with 26 keypoints), which can d
     --id 1012 \
     --task RobotWelding
 ```
+
 2. **Triangulation and visualization**
 
 Triangulate keypoints from multiple camera views (can be done with any set of cameras, minimum 2). The triangulation results are saved in the output folder.
