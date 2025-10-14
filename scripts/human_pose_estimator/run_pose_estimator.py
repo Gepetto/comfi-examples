@@ -1,19 +1,12 @@
 #!/usr/bin/env python3
 import argparse
 from pathlib import Path
-import sys
 import cv2
 import numpy as np
-from rtmlib import Wholebody, draw_skeleton, Custom, PoseTracker
+from rtmlib import draw_skeleton, Custom, PoseTracker
 from functools import partial
 import csv
 import os
-
-# ---- local imports (assuming this file is in scripts/ or similar) ----
-THIS_DIR = Path(__file__).resolve().parent
-PARENT_DIR = THIS_DIR.parent
-if str(PARENT_DIR) not in sys.path:
-    sys.path.append(str(PARENT_DIR))
 
 SUBJECT_IDS = [
     "1012","1118","1508","1602","1847","2112","2198","2307","3361",
@@ -63,7 +56,7 @@ def process_one(comfi_root, sid, task, show_realtime, cam_ids):
     device = 'cpu'  # 'cpu', 'cuda'
     backend = 'onnxruntime'
     openpose_skeleton = False
-    
+
     # ----------------rtmlib-------------------- #
     # refer to rtmlib repo for more details
     custom = partial(
@@ -97,7 +90,7 @@ def process_one(comfi_root, sid, task, show_realtime, cam_ids):
         out_dir = Path(f"output/videos/{sid}/{task}").resolve()
         os.makedirs(out_dir, exist_ok=True)
         output_path = out_dir / f'camera_{cam_id}_with_keypoints.avi'
-        
+
         csv_dir = Path(f"output/res_hpe/{sid}/{task}").resolve()
         os.makedirs(csv_dir, exist_ok=True)
         csv_output = csv_dir / f'keypoints_cam{cam_id}.csv'

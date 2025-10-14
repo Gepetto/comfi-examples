@@ -1,22 +1,15 @@
 #!/usr/bin/env python3
 import argparse
 from pathlib import Path
-import sys
 import numpy as np
 
-# ---- local imports (assuming this file is in scripts/ or similar) ----
-THIS_DIR = Path(__file__).resolve().parent
-PARENT_DIR = THIS_DIR.parent
-if str(PARENT_DIR) not in sys.path:
-    sys.path.append(str(PARENT_DIR))
-
-from utils.cam_utils import load_camera_parameters
-from utils.triangulation_utils import triangulate_points_adaptive
-from utils.utils import (
+from comfi_examples.cam_utils import load_camera_parameters
+from comfi_examples.triangulation_utils import triangulate_points_adaptive
+from comfi_examples.utils import (
     read_mmpose_file, save_to_csv, load_transformation,
     transform_keypoints_list_cam0_to_mocap, read_mmpose_scores
 )
-from utils.linear_algebra_utils import butterworth_filter
+from comfi_examples.linear_algebra_utils import butterworth_filter
 
 SUBJECT_IDS = [
     "1012","1118","1508","1602","1847","2112","2198","2307","3361",

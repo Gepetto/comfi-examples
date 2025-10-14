@@ -4,7 +4,7 @@ Data from Zenodo (https://zenodo.org/records/17223909) should be downloaded and 
 
 ![COMFI Organization](images/comfi_organisation.pdf)
 
-In particular, we recommend users to extract all the videos zip files into a same videos folder located into COMFI and to put the whole dataset into the present repository. 
+In particular, we recommend users to extract all the videos zip files into a same videos folder located into COMFI and to put the whole dataset into the present repository.
 
 # comfi-usage
 
@@ -42,18 +42,18 @@ Run the RTMlib pose estimator (YOLOX + RTMPose-M with 26 keypoints), which can d
 
 ```bash
 python scripts/human_pose_estimator/run_pose_estimator.py \
-     --id 1012 \
-     --task RobotWelding \
-     --comfi-root /path/to/COMFI
+    --id 1012 \
+    --task RobotWelding \
+    --comfi-root ./COMFI
 ```
 2. **Triangulation and visualization**
 
 Triangulate keypoints from multiple camera views (can be done with any set of cameras, minimum 2). The triangulation results are saved in the output folder.
 ```bash
 python scripts/run_triangulation.py \
-    --id 4279 \
+    --id 1012 \
     --task RobotWelding \
-    --nb-cams 4
+    --comfi-root ./COMFI
 ```
 2.1 **Visualize triangulated data:**
 ```bash
@@ -71,7 +71,7 @@ python scripts/visualization/viz_jcp.py \
 python scripts/visualization/viz_mks.py \
     --id 1012 \
     --task RobotWelding \
-    --comfi-root /path/to/COMFI \
+    --comfi-root ./COMFI \
     --freq 40 \
     --mkset est \
     --with_jcp \
@@ -85,9 +85,9 @@ Visualize multimodal data and animate motion capture sequences, including refere
 **Note:** Robot and force data are not available for all tasks. Additionally, robot data is only aligned with videos at 40 Hz.
 ```bash
 python scripts/visualization/viz_all_data.py \
-     --id 4279 \
+     --id 1012 \
      --task RobotWelding \
-     --comfi-root /path/to/COMFI \
+     --comfi-root ./COMFI \
      --freq 40 \
      --start 100 \
      --with-jcp-hpe \ (optional)
@@ -101,7 +101,7 @@ The extracted JCP are saved in the output folder.
 python scripts/get_jcp_from_mocap_markers.py \
     --id 1012 \
     --task RobotWelding \
-    --comfi-root /path/to/COMFI \
+    --comfi-root ./COMFI \
     --freq 40 \
     --mkset est
 
@@ -111,8 +111,8 @@ python scripts/get_jcp_from_mocap_markers.py \
 Performs a Procrustes alignment between JCP Mocap and JCP HPE. The newly aligned JCP are saved in the output folder.
 ```bash
 python scripts/run_procruste_alignement.py \
-    --id 4279 \
+    --id 1012 \
     --task RobotWelding \
-    --comfi-root /path/to/COMFI \
+    --comfi-root ./COMFI \
     --nb-cams 4
 ```

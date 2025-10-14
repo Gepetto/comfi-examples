@@ -1,21 +1,14 @@
 #!/usr/bin/env python3
 import argparse
 from pathlib import Path
-import sys
 import numpy as np
 import pandas as pd
 import meshcat
 from pinocchio.visualize import MeshcatVisualizer
 import time
 
-# ---- local imports (assuming this file is in scripts/ or similar) ----
-THIS_DIR = Path(__file__).resolve().parent
-PARENT_DIR = THIS_DIR.parent.parent
-if str(PARENT_DIR) not in sys.path:
-    sys.path.append(str(PARENT_DIR))
-from utils.utils import read_mks_data
-from utils.viz_utils import add_markers_to_meshcat, set_markers_frame
-# ----------------------------------------------------------------------
+from comfi_examples.utils import read_mks_data
+from comfi_examples.viz_utils import add_markers_to_meshcat, set_markers_frame
 
 SUBJECT_IDS = [
     "1012","1118","1508","1602","1847","2112","2198","2307","3361",
@@ -74,7 +67,7 @@ def main():
     if not mks_csv_path.exists():
         raise FileNotFoundError(f"CSV not found: the task {args.task} is not available for id {args.subject_id}")
 
-    
+
     # Load CSVs
     mks_df = pd.read_csv(mks_csv_path)
     mks_dict, mks_start_sample_dict = read_mks_data(mks_df, start_sample=0, converter=1000.0)
@@ -93,7 +86,7 @@ def main():
     stop = n if args.stop is None else min(args.stop, n)
     if start >= stop:
         raise ValueError(f"Invalid range: start={start}, stop={stop}, total={n}")
-    
+
     # Viewer
     viewer = meshcat.Visualizer()
     viz = MeshcatVisualizer()

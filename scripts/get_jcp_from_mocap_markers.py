@@ -1,17 +1,11 @@
 #!/usr/bin/env python3
 import argparse
 from pathlib import Path
-import sys
 import pandas as pd
 import os
 
-# ---- local imports (assuming this file is in scripts/ or similar) ----
-THIS_DIR = Path(__file__).resolve().parent
-PARENT_DIR = THIS_DIR.parent
-if str(PARENT_DIR) not in sys.path:
-    sys.path.append(str(PARENT_DIR))
-from utils.utils import read_mks_data
-from utils.urdf_utils import compute_joint_centers_from_mks
+from comfi_examples.utils import read_mks_data
+from comfi_examples.urdf_utils import compute_joint_centers_from_mks
 
 SUBJECT_IDS = [
     "1012","1118","1508","1602","1847","2112","2198","2307","3361",

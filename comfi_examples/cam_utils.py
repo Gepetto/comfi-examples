@@ -3,9 +3,9 @@ import numpy as np
 import os  
 import cv2 as cv
 import yaml
-from utils.utils import load_transformation
+from .utils import load_transformation
 import pinocchio as pin 
-from utils.linear_algebra_utils import transform_to_local_frame
+from .linear_algebra_utils import transform_to_local_frame
 def rt_to_homogeneous(R, T):
     """Convert (R, T) to a 4x4 homogeneous transformation matrix."""
     T = T.reshape(3,)

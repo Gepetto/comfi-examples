@@ -1,30 +1,19 @@
 #!/usr/bin/env python3
 import argparse
 from pathlib import Path
-import sys
-import os
 
 from dataclasses import dataclass
-from typing import Dict, Any, List, Tuple, Optional
+from typing import Dict, List, Tuple
 from xmlrpc.client import Boolean
-import pandas as pd
 import numpy as np
 import pinocchio as pin
 from pinocchio.visualize import MeshcatVisualizer
 import meshcat
 import meshcat_shapes
-import time
 
-# ---- local imports (assuming this file is in scripts/ or similar) ----
-THIS_DIR = Path(__file__).resolve().parent
-PARENT_DIR = THIS_DIR.parent.parent
-if str(PARENT_DIR) not in sys.path:
-    sys.path.append(str(PARENT_DIR))
-
-from utils.urdf_utils import build_human_model, lock_joints, load_robot_panda
-from utils.viz_utils import box_between_frames, set_tf, draw_table, addViewerBox, make_visuals_gray, animate
-from utils.utils import compute_time_sync,load_cameras_from_soder, load_robot_base_pose, load_all_data,load_force_data
-# ----------------------------------------------------------------------
+from comfi_examples.urdf_utils import build_human_model, load_robot_panda
+from comfi_examples.viz_utils import box_between_frames, set_tf, draw_table, addViewerBox, make_visuals_gray, animate
+from comfi_examples.utils import compute_time_sync,load_cameras_from_soder, load_robot_base_pose, load_all_data,load_force_data
 
 SUBJECT_IDS = [
     "1012","1118","1508","1602","1847","2112","2198","2307","3361",
@@ -88,7 +77,7 @@ class Paths:
         meshes_dir: str | Path = MESHES_DIR_DEFAULT,
         camera_ids=("0","2","4","6"),
                 ) -> "Paths":
-        
+
         root = Path(comfi_root).resolve()
 
         freq_anim = freq
@@ -97,7 +86,7 @@ class Paths:
             freq_anim = 40
         split = "aligned" if (int(freq) == 40 or task_has_robot(task)) else "raw"
 
-        # REQUIRED CSVs 
+        # REQUIRED CSVs
         mks_csv = root / "mocap" / split / subject_id / task / "markers_trajectories.csv"
         if not mks_csv.exists():
             raise FileNotFoundError(f"Missing MKS mocap {split} CSV: {mks_csv}")
@@ -109,7 +98,7 @@ class Paths:
         cam0_ts_csv = root / "videos" / subject_id / task / "camera_0_timestamps.csv"
         if not cam0_ts_csv.exists():
             raise FileNotFoundError(f"Missing camera 0 timestamps CSV: {cam0_ts_csv}")
-        
+
         jcp_mocap = root / "mocap" / split / subject_id / task / "joint_center_positions.csv"
         if not jcp_mocap.exists():
             raise FileNotFoundError(f"Missing JCP mocap {split} CSV: {jcp_mocap}")
@@ -136,13 +125,13 @@ class Paths:
                 f"Meshes directory not found: {meshes_dir}\n"
                 f"(Edit MESHES_DIR_DEFAULT if your repo differs.)"
             )
-        
+
         if task in TASKS_WITHOUT_FP:
             force_data = None
         else:
             force_data = root / "forces" / split / subject_id / task / f"{task}_devices.csv"
             if not force_data.exists():
-                raise FileNotFoundError(f"Missing force plates CSV: {force_data}") 
+                raise FileNotFoundError(f"Missing force plates CSV: {force_data}")
 
         # OPTIONAL robot assets (only for Robot* tasks)
         if task_has_robot(task):
@@ -206,12 +195,12 @@ def parse_args():
                    help="Start frame index (inclusive). Default: 0")
     p.add_argument("--stop", type=int, default=None,
                    help="Stop frame index (exclusive). Default: None (till end)")
-    
+
     p.add_argument("--with-jcp-hpe", action="store_true",
                    help="Enable JCP HPE mode (default: False)")
     p.add_argument("--jcp-hpe-mode", choices=["aligned", "2cams", "4cams","3cams"], default=None,
                    help="Specify JCP HPE mode if --with-jcp-hpe is set.")
-    
+
     args = p.parse_args()
     if args.with_jcp_hpe and args.jcp_hpe_mode is None:
         p.error("--jcp-hpe-mode is required when --with-jcp-hpe is set.")
@@ -237,7 +226,7 @@ def define_scene(urdf_path: str,
     # Human base
     model_h, coll_h, vis_h, _ = build_human_model(urdf_path, urdf_meshes_path)
     data_h = model_h.createData()
-    
+
     # make visuals gray
     make_visuals_gray(vis_h)
 
@@ -354,7 +343,7 @@ def define_scene(urdf_path: str,
         T_cam=np.eye(4)
         T_cam[0:3,0:3] =[[1,0,0],
                             [0,0,-1],
-                            [0,1,0]] 
+                            [0,1,0]]
 
         Tck = cameras[k]
         meshcat_shapes.frame(viz_human.viewer[cam_frame_name(k)], axis_length=0.2, axis_thickness=0.02, opacity=0.8, origin_radius=0.02)
@@ -375,7 +364,7 @@ def define_scene(urdf_path: str,
         T_world_table = np.eye(4)
         T_world_table[:3, 3] = [0.9, -0.6, 0.0]
         draw_table(viz_human, T_world_table)
-    
+
     return Scene(
         viewer=viewer,
         viz_human=viz_human,
@@ -399,7 +388,7 @@ def main():
     paths = Paths.from_args(args.comfi_root, args.subject_id, args.task, args.freq)
     if args.with_jcp_hpe:
         Paths.jcp_hpe = Path("output").resolve() / "res_hpe" / args.subject_id / args.task  / f"3d_keypoints_{args.jcp_hpe_mode}.csv"
-    
+
     #read all data
     payload = load_all_data(paths, start_sample=0, converter=1000.0)
     mks_dict = payload["mks_dict"]
@@ -414,28 +403,28 @@ def main():
     jcp_names_hpe = None
 
     if args.with_jcp_hpe:
-        jcp_hpe = payload.get("jcp_hpe", None)  
+        jcp_hpe = payload.get("jcp_hpe", None)
         jcp_names_hpe = payload.get("jcp_names_hpe", None)
-    
+
 
     # transforms (robot base + cameras)
     if paths.robot_base_yaml is not None:
         T_world_robot = load_robot_base_pose(paths.robot_base_yaml)
-    else : 
+    else :
         T_world_robot = None
 
     cameras = load_cameras_from_soder(paths.soder_paths)
 
     if paths.force_data is not None:
         force_data = load_force_data(paths.force_data)
-    else : 
-        force_data = None 
+    else :
+        force_data = None
 
 
     # define the scene
     fp_dims = [(0.5,0.6), (0.50,0.60), (0.50,0.60), (0.9,1.8), (0.5,0.6)]
     fp_centers = [(-0.830,-0.3,0.0), (-0.25,-0.3,0.0), (0.39,-0.3,0.0), (-1.68,-0.3,0.0), (-0.25,0.3,0.0)]
-    
+
     scene = define_scene(
         urdf_path=paths.urdf_path,
         urdf_meshes_path=paths.urdf_meshes_path,
@@ -445,7 +434,7 @@ def main():
         forceplates_dims_and_centers=(fp_dims, fp_centers),
         bg_top=(1,1,1), bg_bottom=(1,1,1), grid_height=-0.0
     )
-    
+
     #time syn between cameras and robot data
     if t_robot is not None:
         sync = compute_time_sync(t_cam, t_robot, tol_ms=5)
@@ -458,7 +447,7 @@ def main():
         sync = None
 
     #animation
-    animate(scene, jcp_mocap, jcp_names,jcp_hpe,jcp_names_hpe, q_ref, q_robot, force_data,  
+    animate(scene, jcp_mocap, jcp_names,jcp_hpe,jcp_names_hpe, q_ref, q_robot, force_data,
         (fp_dims, fp_centers), sync, paths.freq_anim, step=5, i0=0)
 
 if __name__ == "__main__":

@@ -1,18 +1,11 @@
 #!/usr/bin/env python3
 import argparse
 from pathlib import Path
-import sys
 import numpy as np
 import pandas as pd
 
-# ---- local imports (assuming this file is in scripts/ or similar) ----
-THIS_DIR = Path(__file__).resolve().parent
-PARENT_DIR = THIS_DIR.parent
-if str(PARENT_DIR) not in sys.path:
-    sys.path.append(str(PARENT_DIR))
-
-from  utils.utils  import read_mks_data
-from utils.utils import kabsch_global, plot_aligned_markers,compute_mpjpe
+from comfi_examples.utils  import read_mks_data
+from comfi_examples.utils import kabsch_global, plot_aligned_markers,compute_mpjpe
 
 SUBJECT_IDS = [
     "1012","1118","1508","1602","1847","2112","2198","2307","3361",
@@ -35,7 +28,7 @@ def parse_args():
                    help="Task names (space-separated), e.g., --task RobotWelding Lifting")
     p.add_argument("--comfi-root", required=True,
                    help="Path to COMFI dataset root.")
-    p.add_argument("--nb_cams", default=4,
+    p.add_argument("--nb-cams", default=4,
                    help="Number of cameras used for the triangulation of the hpe keypoints")
     return p.parse_args()
 

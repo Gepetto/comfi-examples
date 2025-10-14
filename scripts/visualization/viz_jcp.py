@@ -1,22 +1,14 @@
 #!/usr/bin/env python3
 import argparse
 from pathlib import Path
-import sys
 import numpy as np
 import pandas as pd
 import meshcat
 from pinocchio.visualize import MeshcatVisualizer
 import time
 
-# ---- local imports (assuming this file is in scripts/ or similar) ----
-THIS_DIR = Path(__file__).resolve().parent
-PARENT_DIR = THIS_DIR.parent.parent
-print(PARENT_DIR)
-if str(PARENT_DIR) not in sys.path:
-    sys.path.append(str(PARENT_DIR))
-from utils.utils import read_mks_data
-from utils.viz_utils import add_markers_to_meshcat, set_markers_frame
-# ----------------------------------------------------------------------
+from comfi_examples.utils import read_mks_data
+from comfi_examples.viz_utils import add_markers_to_meshcat, set_markers_frame
 
 SUBJECT_IDS = [
     "1012","1118","1508","1602","1847","2112","2198","2307","3361",
@@ -36,7 +28,7 @@ def parse_args():
 
     p.add_argument("--mode", choices=["mocap", "hpe"], required=True,
                         help="Choose source type")
-    
+
     p.add_argument("--id", dest="subject_id", required=True,
                    help="ID (e.g., 1012)")
     p.add_argument("--task", required=True,
@@ -47,12 +39,12 @@ def parse_args():
                    help="Start frame index (inclusive). Default: 0")
     p.add_argument("--stop", type=int, default=None,
                    help="Stop frame index (exclusive). Default: None (till end)")
-    
+
 
     p.add_argument("--comfi-root", help="Path to comfi root directory (only for jcp_mocap)")
     p.add_argument("--nb-cams", type=int, help="Number of cameras (only for jcp_hpe)")
 
-    
+
     args = p.parse_args()
 
     if args.mode == "jcp_mocap":
@@ -66,7 +58,7 @@ def parse_args():
             p.error("--comfi-root is not allowed when --mode jcp_hpe")
         if args.nb_cams is None:
             p.error("--nb-cams is required when --mode jcp_hpe")
-    
+
     return p.parse_args()
 
 
@@ -82,11 +74,11 @@ def main():
 
     split_folder = "aligned" if args.freq == 40 else "raw"
 
-    
-    if args.mode == "mocap": 
+
+    if args.mode == "mocap":
         comfi_root = Path(args.comfi_root)
         csv_path = comfi_root / "mocap" / split_folder / args.subject_id / args.task / "joint_center_positions.csv"
-    else : 
+    else :
         csv_path = Path("output").resolve() / "res_hpe" / args.subject_id / args.task  / f"3d_keypoints_{args.nb_cams}cams.csv"
 
     if not csv_path.exists():
