@@ -38,7 +38,7 @@ Data from Zenodo (https://zenodo.org/records/17223909) should be downloaded and 
 A script is provided for this:
 
 ```bash
-./scripts/download.py
+./scripts/download.py --delete-zip
 ```
 
 1. **Human pose estimation (HPE)**

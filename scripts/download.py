@@ -1,3 +1,4 @@
+#!/usr/bin/env python3 
 import argparse
 from os import environ
 import asyncio
@@ -22,6 +23,7 @@ def get_parser() -> argparse.ArgumentParser:
         type=Path,
         default=Path("downloads"),
     )
+    p.add_argument("--delete-zip", action="store_true")
     p.add_argument(
         "--comfi-root",
         type=Path,
@@ -105,7 +107,7 @@ class Entry:
             err = f"wrong {algo} checksum for {self.name}: {digest} != {expected}"
             raise ValueError(err)
 
-    def extract(self):
+    def extract(self, delete_zip: bool):
         out = self.download_dir / self.path.stem
         if out.exists():
             logger.info("%s already extracted, skipping", out)
@@ -114,6 +116,9 @@ class Entry:
         if self.path.suffix == ".zip":
             with ZipFile(self.path) as z:
                 z.extractall(out)
+            if delete_zip:
+                logger.info("removing %s", self.path)
+                self.path.unlink()
         else:
             logger.warning("unknown extension %s", self.path.suffix)
 
@@ -131,7 +136,12 @@ async def fetch_entries(
 
 
 async def main(
-    zenodo_id: str, download_dir: Path, comfi_root: Path, jobs: int, **kwargs
+    zenodo_id: str,
+    download_dir: Path,
+    comfi_root: Path,
+    jobs: int,
+    delete_zip: bool,
+    **kwargs,
 ):
     download_dir.mkdir(parents=True, exist_ok=True)
     limits = httpx.Limits(max_connections=jobs)
@@ -144,7 +154,7 @@ async def main(
 
         logger.info("Extracting entries")
         for entry in entries:
-            entry.extract()
+            entry.extract(delete_zip)
 
     logger.info("Generating %s directory", comfi_root)
 
