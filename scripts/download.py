@@ -160,16 +160,16 @@ async def fetch_entries(
     return [Entry(name, meta, download_dir) for name, meta in data.items()]
 
 
-def _should_skip(name: str, skip_filters: list[str]) -> bool:
+def _should_skip(name: str, exclude: list[str]) -> bool:
     """
     name: e.g., 'mocap.zip', 'videos2.zip'
-    skip_filters: e.g., ['mocap', 'cam_params'] or ['videos'] or ['none']
+    exclude: e.g., ['mocap', 'cam_params'] or ['videos'] or ['none']
     """
-    if "none" in skip_filters:
+    if "none" in exclude:
         return False
     stem = Path(name).stem  # 'mocap', 'videos2', etc.
 
-    for f in skip_filters:
+    for f in exclude:
         if f == "videos" and stem.startswith("videos"):
             return True
         if f == stem:
