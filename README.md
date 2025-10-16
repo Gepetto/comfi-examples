@@ -41,7 +41,7 @@ A script is provided for this:
 ./scripts/download.py --delete-zip
 ```
 
-You can also filter some .zip files if they are already downloaded for instance using: 
+You can also filter some .zip files if they are already downloaded for instance using:
 ```bash
 ./scripts/download.py --delete-zip --filter mocap cam_params
 ```
@@ -63,7 +63,7 @@ Triangulate keypoints from multiple camera views (can be done with any set of ca
 ./scripts/run_triangulation.py \
     --id 1012 \
     --task RobotWelding \
-    --cams 0 2 
+    --cams 0 2
 ```
 
 **Note:** For all visualization scripts, the video of the visualization can be saved by setting --save-video as an option to run the script

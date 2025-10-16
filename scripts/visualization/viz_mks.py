@@ -100,7 +100,9 @@ def parse_args():
         default=None,
         help="Stop frame index (exclusive). Default: None (till end)",
     )
-    p.add_argument("--save-video", action="store_true", help="Save a video of the visualization")
+    p.add_argument(
+        "--save-video", action="store_true", help="Save a video of the visualization"
+    )
 
     return p.parse_args()
 
@@ -213,15 +215,21 @@ def main():
 
     # Animate
     if args.save_video:
-        set_markers_frame(viewer, mks_dict, start, marker_names=mks_names, unit_scale=1.0)
+        set_markers_frame(
+            viewer, mks_dict, start, marker_names=mks_names, unit_scale=1.0
+        )
         if args.with_jcp:
             set_markers_frame(
                 viewer, jcp_dict, start, marker_names=jcp_names, unit_scale=1.0
             )
-        input('Pause to set the view in Meshcat, press Enter to start the visualization')
-        images=[]
+        input(
+            "Pause to set the view in Meshcat, press Enter to start the visualization"
+        )
+        images = []
         for i in range(start, stop):
-            set_markers_frame(viewer, mks_dict, i, marker_names=mks_names, unit_scale=1.0)
+            set_markers_frame(
+                viewer, mks_dict, i, marker_names=mks_names, unit_scale=1.0
+            )
             if args.with_jcp:
                 set_markers_frame(
                     viewer, jcp_dict, i, marker_names=jcp_names, unit_scale=1.0
@@ -234,10 +242,12 @@ def main():
         print(
             f"[OK] Visualized {stop - start} frames | ID {args.subject_id} | Task {args.task} | {args.freq} Hz"
         )
-        print(f"[VIDEO] Video saved to {video_path}") 
+        print(f"[VIDEO] Video saved to {video_path}")
     else:
         for i in range(start, stop):
-            set_markers_frame(viewer, mks_dict, i, marker_names=mks_names, unit_scale=1.0)
+            set_markers_frame(
+                viewer, mks_dict, i, marker_names=mks_names, unit_scale=1.0
+            )
             if args.with_jcp:
                 set_markers_frame(
                     viewer, jcp_dict, i, marker_names=jcp_names, unit_scale=1.0

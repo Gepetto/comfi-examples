@@ -299,7 +299,9 @@ def parse_args():
         help="Specify JCP HPE mode if --with-jcp-hpe is set.",
     )
 
-    p.add_argument("--save-video", action="store_true", help="Save a video of the visualization")
+    p.add_argument(
+        "--save-video", action="store_true", help="Save a video of the visualization"
+    )
 
     args = p.parse_args()
     if args.with_jcp_hpe and args.jcp_hpe_mode is None:
@@ -529,7 +531,7 @@ def main():
             / args.task
             / f"3d_keypoints_{args.jcp_hpe_mode}.csv"
         )
-    
+
     if args.save_video:
         split_folder = "aligned" if args.freq == 40 else "raw"
         Paths.video = (
@@ -621,9 +623,9 @@ def main():
             video_path=video_path,
             step=1,
             i0=args.start,
-            ifinal=args.stop
+            ifinal=args.stop,
         )
-    else : 
+    else:
         animate(
             scene,
             jcp_mocap,
@@ -639,7 +641,7 @@ def main():
             video_path=None,
             step=1,
             i0=args.start,
-            ifinal=args.stop
+            ifinal=args.stop,
         )
 
 

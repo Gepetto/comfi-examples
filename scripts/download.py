@@ -1,4 +1,4 @@
-#!/usr/bin/env python3 
+#!/usr/bin/env python3
 import argparse
 from os import environ
 import asyncio
@@ -159,6 +159,7 @@ async def fetch_entries(
 
     return [Entry(name, meta, download_dir) for name, meta in data.items()]
 
+
 def _should_skip(name: str, skip_filters: list[str]) -> bool:
     """
     name: e.g., 'mocap.zip', 'videos2.zip'
@@ -182,7 +183,7 @@ async def main(
     comfi_root: Path,
     jobs: int,
     delete_zip: bool,
-    filter: list[str], 
+    filter: list[str],
     **kwargs,
 ):
     download_dir.mkdir(parents=True, exist_ok=True)

@@ -328,7 +328,7 @@ def animate(
     video_path=None,
     step=1,
     i0=0,
-    ifinal=None
+    ifinal=None,
 ):
     if ifinal is None:
         ifinal = len(q_ref)
@@ -362,7 +362,9 @@ def animate(
 
     if video_path is not None:
         # draw JCP spheres
-        set_markers_frame(viewer, jcp, i0, marker_names=jcp_names, unit_scale=unit_scale)
+        set_markers_frame(
+            viewer, jcp, i0, marker_names=jcp_names, unit_scale=unit_scale
+        )
 
         jcp_hpe_renamed = []
         if jcp_hpe is not None:
@@ -414,11 +416,15 @@ def animate(
                             display_force_meshcat(
                                 scene.viz_human, phi, M_se3, f"force_sensor{sensor_id}"
                             )
-        input('Pause to set the view in Meshcat, press Enter to start the visualization')
+        input(
+            "Pause to set the view in Meshcat, press Enter to start the visualization"
+        )
         images = []
         for i in range(i0, ifinal, step):
             # draw JCP spheres
-            set_markers_frame(viewer, jcp, i, marker_names=jcp_names, unit_scale=unit_scale)
+            set_markers_frame(
+                viewer, jcp, i, marker_names=jcp_names, unit_scale=unit_scale
+            )
 
             # set_markers_frame(viewer, mks_dict, i, marker_names=mks_names, unit_scale=unit_scale)
 
@@ -462,7 +468,8 @@ def animate(
 
                             if not np.any(np.isnan([fx, fy, fz])):
                                 phi = pin.Force(
-                                    np.array([fx, fy, fz]), np.array([mx, my, mz]) * 1e-3
+                                    np.array([fx, fy, fz]),
+                                    np.array([mx, my, mz]) * 1e-3,
                                 )
 
                                 M_se3 = pin.SE3.Identity()
@@ -470,18 +477,23 @@ def animate(
                                 M_se3.translation[2] += 0.02
 
                                 display_force_meshcat(
-                                    scene.viz_human, phi, M_se3, f"force_sensor{sensor_id}"
+                                    scene.viz_human,
+                                    phi,
+                                    M_se3,
+                                    f"force_sensor{sensor_id}",
                                 )
             images.append(scene.viz_human.viewer.get_image())
             time.sleep(0.90 * 1 / freq)
         os.makedirs(video_path.parent, exist_ok=True)
         imageio.mimsave(video_path, images, fps=freq)
-        print(f"[VIDEO] Video saved to {video_path}") 
+        print(f"[VIDEO] Video saved to {video_path}")
 
-    else: 
+    else:
         for i in range(i0, ifinal, step):
             # draw JCP spheres
-            set_markers_frame(viewer, jcp, i, marker_names=jcp_names, unit_scale=unit_scale)
+            set_markers_frame(
+                viewer, jcp, i, marker_names=jcp_names, unit_scale=unit_scale
+            )
 
             # set_markers_frame(viewer, mks_dict, i, marker_names=mks_names, unit_scale=unit_scale)
 
@@ -525,7 +537,8 @@ def animate(
 
                             if not np.any(np.isnan([fx, fy, fz])):
                                 phi = pin.Force(
-                                    np.array([fx, fy, fz]), np.array([mx, my, mz]) * 1e-3
+                                    np.array([fx, fy, fz]),
+                                    np.array([mx, my, mz]) * 1e-3,
                                 )
 
                                 M_se3 = pin.SE3.Identity()
@@ -533,7 +546,10 @@ def animate(
                                 M_se3.translation[2] += 0.02
 
                                 display_force_meshcat(
-                                    scene.viz_human, phi, M_se3, f"force_sensor{sensor_id}"
+                                    scene.viz_human,
+                                    phi,
+                                    M_se3,
+                                    f"force_sensor{sensor_id}",
                                 )
             time.sleep(0.90 * 1 / freq)
 
