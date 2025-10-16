@@ -192,12 +192,12 @@ async def main(
         logger.info("Requesting files from zenodo…")
         entries = await fetch_entries(client, zenodo_id, download_dir)
 
-        # Apply skip filter BEFORE downloading
-        to_skip = [e for e in entries if _should_skip(e.name, filter)]
+        # Apply exclude BEFORE downloading
+        to_skip = [e for e in entries if _should_skip(e.name, exclude)]
         if to_skip:
             for e in to_skip:
-                logger.info("Skipping per --filter: %s", e.name)
-        entries = [e for e in entries if not _should_skip(e.name, filter)]
+                logger.info("Skipping per --exclude: %s", e.name)
+        entries = [e for e in entries if not _should_skip(e.name, exclude)]
 
         logger.info("Downloading entries")
         await asyncio.gather(*(entry.download(client) for entry in entries))
