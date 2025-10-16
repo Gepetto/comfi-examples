@@ -43,7 +43,7 @@ A script is provided for this:
 
 You can also filter some .zip files if they are already downloaded for instance using:
 ```bash
-./scripts/download.py --delete-zip --filter mocap cam_params
+./scripts/download.py --delete-zip --exclude mocap cam_params
 ```
 
 1. **Human pose estimation (HPE)**
