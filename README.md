@@ -41,7 +41,7 @@ A script is provided for this:
 ./scripts/download.py --delete-zip
 ```
 
-You can also filter some .zip files if they are already downloaded for instance using:
+You can also exclude some .zip files if they are already downloaded for instance using:
 ```bash
 ./scripts/download.py --delete-zip --exclude mocap cam_params
 ```
