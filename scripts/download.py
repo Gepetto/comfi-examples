@@ -30,10 +30,35 @@ def get_parser() -> argparse.ArgumentParser:
         default=Path(environ.get("COMFI_ROOT", "COMFI")),
     )
     p.add_argument(
+        "--filter",
+        nargs="+",
+        default=["all"],
+        choices=[
+            "all",
+            "metadata",
+            "cam_params",
+            "forces",
+            "mocap",
+            "robot",
+            "videos",
+            "videos1",
+            "videos2",
+            "videos3",
+            "videos4",
+            "videos5",
+            "videos6",
+        ],
+        help=(
+            "Skip downloading specific archives. Example: "
+            "--filter mocap cam_params (skips mocap.zip and cam_params.zip). "
+            "'videos' skips all videos1..videos6. Default: all (downloads everything)."
+        ),
+    )
+    p.add_argument(
         "-j",
         "--jobs",
         type=int,
-        default=5,
+        default=3,
     )
     p.add_argument(
         "-q",
@@ -134,6 +159,22 @@ async def fetch_entries(
 
     return [Entry(name, meta, download_dir) for name, meta in data.items()]
 
+def _should_skip(name: str, skip_filters: list[str]) -> bool:
+    """
+    name: e.g., 'mocap.zip', 'videos2.zip'
+    skip_filters: e.g., ['mocap', 'cam_params'] or ['videos'] or ['all']
+    """
+    if "all" in skip_filters:
+        return False
+    stem = Path(name).stem  # 'mocap', 'videos2', etc.
+
+    for f in skip_filters:
+        if f == "videos" and stem.startswith("videos"):
+            return True
+        if f == stem:
+            return True
+    return False
+
 
 async def main(
     zenodo_id: str,
@@ -141,6 +182,7 @@ async def main(
     comfi_root: Path,
     jobs: int,
     delete_zip: bool,
+    filter: list[str], 
     **kwargs,
 ):
     download_dir.mkdir(parents=True, exist_ok=True)
@@ -148,6 +190,13 @@ async def main(
     async with httpx.AsyncClient(timeout=None, limits=limits) as client:
         logger.info("Requesting files from zenodo…")
         entries = await fetch_entries(client, zenodo_id, download_dir)
+
+        # Apply skip filter BEFORE downloading
+        to_skip = [e for e in entries if _should_skip(e.name, filter)]
+        if to_skip:
+            for e in to_skip:
+                logger.info("Skipping per --filter: %s", e.name)
+        entries = [e for e in entries if not _should_skip(e.name, filter)]
 
         logger.info("Downloading entries")
         await asyncio.gather(*(entry.download(client) for entry in entries))
@@ -164,19 +213,31 @@ async def main(
     for folder in download_dir.glob("videos*"):
         if not folder.is_dir():
             continue
-        for child in (folder / folder.name).iterdir():
-            (path / child.name).symlink_to(
-                target=child.absolute(), target_is_directory=child.is_dir()
-            )
+        inner = folder / folder.name
+        if not inner.exists():
+            logger.debug("Videos inner folder missing, skipping: %s", inner)
+            continue
+        for child in inner.iterdir():
+            target = child.absolute()
+            link = path / child.name
+            if link.exists():
+                continue
+            link.symlink_to(target=target, target_is_directory=child.is_dir())
 
-    # Symling everything else
+    # Symlink everything else (guard against missing dirs)
     for folder in ["cam_params", "forces", "mocap", "robot", "metadata"]:
         path = comfi_root / folder
         path.mkdir(parents=True, exist_ok=True)
-        for child in (download_dir / folder / folder).iterdir():
-            (path / child.name).symlink_to(
-                target=child.absolute(), target_is_directory=child.is_dir()
-            )
+        inner = download_dir / folder / folder
+        if not inner.exists():
+            logger.debug("Folder missing, skipping symlinks: %s", inner)
+            continue
+        for child in inner.iterdir():
+            target = child.absolute()
+            link = path / child.name
+            if link.exists():
+                continue
+            link.symlink_to(target=target, target_is_directory=child.is_dir())
 
 
 if __name__ == "__main__":

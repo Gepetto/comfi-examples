@@ -41,6 +41,11 @@ A script is provided for this:
 ./scripts/download.py --delete-zip
 ```
 
+You can also filter some .zip files if they are already downloaded for instance using: 
+```bash
+./scripts/download.py --delete-zip --filter mocap cam_params
+```
+
 1. **Human pose estimation (HPE)**
 
 Run the RTMlib pose estimator (YOLOX + RTMPose-M with 26 keypoints), which can display the results in real time (this option can be disabled). At the end of the run, an output video with the skeleton overlay and a CSV file containing both the average score and the keypoints are saved in the output folder.
@@ -57,7 +62,8 @@ Triangulate keypoints from multiple camera views (can be done with any set of ca
 ```bash
 ./scripts/run_triangulation.py \
     --id 1012 \
-    --task RobotWelding
+    --task RobotWelding \
+    --cams 0 2 
 ```
 2.1 **Visualize triangulated data:**
 ```bash
