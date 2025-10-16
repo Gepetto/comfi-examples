@@ -30,11 +30,11 @@ def get_parser() -> argparse.ArgumentParser:
         default=Path(environ.get("COMFI_ROOT", "COMFI")),
     )
     p.add_argument(
-        "--filter",
+        "--exclude",
         nargs="+",
-        default=["all"],
+        default=["none"],
         choices=[
-            "all",
+            "none",
             "metadata",
             "cam_params",
             "forces",
@@ -50,8 +50,8 @@ def get_parser() -> argparse.ArgumentParser:
         ],
         help=(
             "Skip downloading specific archives. Example: "
-            "--filter mocap cam_params (skips mocap.zip and cam_params.zip). "
-            "'videos' skips all videos1..videos6. Default: all (downloads everything)."
+            "--exclude mocap cam_params (skips mocap.zip and cam_params.zip). "
+            "'videos' skips all videos1..videos6. Default: none (downloads everything)."
         ),
     )
     p.add_argument(
@@ -163,9 +163,9 @@ async def fetch_entries(
 def _should_skip(name: str, skip_filters: list[str]) -> bool:
     """
     name: e.g., 'mocap.zip', 'videos2.zip'
-    skip_filters: e.g., ['mocap', 'cam_params'] or ['videos'] or ['all']
+    skip_filters: e.g., ['mocap', 'cam_params'] or ['videos'] or ['none']
     """
-    if "all" in skip_filters:
+    if "none" in skip_filters:
         return False
     stem = Path(name).stem  # 'mocap', 'videos2', etc.
 
