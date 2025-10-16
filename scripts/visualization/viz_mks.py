@@ -242,7 +242,7 @@ def main():
                 set_markers_frame(
                     viewer, jcp_dict, i, marker_names=jcp_names, unit_scale=1.0
                 )
-            time.sleep(0.60 * (1 / args.freq))
+            time.sleep(0.90 * (1 / args.freq))
 
         print(
             f"[OK] Visualized {stop - start} frames | ID {args.subject_id} | Task {args.task} | {args.freq} Hz"

@@ -65,6 +65,9 @@ Triangulate keypoints from multiple camera views (can be done with any set of ca
     --task RobotWelding \
     --cams 0 2 
 ```
+
+**Note:** For all visualization scripts, the video of the visualization can be saved by setting --save-video as an option to run the script
+
 2.1 **Visualize triangulated data:**
 ```bash
 ./scripts/visualization/viz_jcp.py \
