@@ -183,7 +183,7 @@ async def main(
     comfi_root: Path,
     jobs: int,
     delete_zip: bool,
-    filter: list[str],
+    exclude: list[str],
     **kwargs,
 ):
     download_dir.mkdir(parents=True, exist_ok=True)
