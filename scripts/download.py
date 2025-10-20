@@ -1,3 +1,4 @@
+#!/usr/bin/env python3
 import argparse
 from os import environ
 import asyncio
@@ -22,16 +23,42 @@ def get_parser() -> argparse.ArgumentParser:
         type=Path,
         default=Path("downloads"),
     )
+    p.add_argument("--delete-zip", action="store_true")
     p.add_argument(
         "--comfi-root",
         type=Path,
         default=Path(environ.get("COMFI_ROOT", "COMFI")),
     )
     p.add_argument(
+        "--exclude",
+        nargs="+",
+        default=["none"],
+        choices=[
+            "none",
+            "metadata",
+            "cam_params",
+            "forces",
+            "mocap",
+            "robot",
+            "videos",
+            "videos1",
+            "videos2",
+            "videos3",
+            "videos4",
+            "videos5",
+            "videos6",
+        ],
+        help=(
+            "Skip downloading specific archives. Example: "
+            "--exclude mocap cam_params (skips mocap.zip and cam_params.zip). "
+            "'videos' skips all videos1..videos6. Default: none (downloads everything)."
+        ),
+    )
+    p.add_argument(
         "-j",
         "--jobs",
         type=int,
-        default=5,
+        default=3,
     )
     p.add_argument(
         "-q",
@@ -105,7 +132,7 @@ class Entry:
             err = f"wrong {algo} checksum for {self.name}: {digest} != {expected}"
             raise ValueError(err)
 
-    def extract(self):
+    def extract(self, delete_zip: bool):
         out = self.download_dir / self.path.stem
         if out.exists():
             logger.info("%s already extracted, skipping", out)
@@ -114,6 +141,9 @@ class Entry:
         if self.path.suffix == ".zip":
             with ZipFile(self.path) as z:
                 z.extractall(out)
+            if delete_zip:
+                logger.info("removing %s", self.path)
+                self.path.unlink()
         else:
             logger.warning("unknown extension %s", self.path.suffix)
 
@@ -130,8 +160,31 @@ async def fetch_entries(
     return [Entry(name, meta, download_dir) for name, meta in data.items()]
 
 
+def _should_skip(name: str, exclude: list[str]) -> bool:
+    """
+    name: e.g., 'mocap.zip', 'videos2.zip'
+    exclude: e.g., ['mocap', 'cam_params'] or ['videos'] or ['none']
+    """
+    if "none" in exclude:
+        return False
+    stem = Path(name).stem  # 'mocap', 'videos2', etc.
+
+    for f in exclude:
+        if f == "videos" and stem.startswith("videos"):
+            return True
+        if f == stem:
+            return True
+    return False
+
+
 async def main(
-    zenodo_id: str, download_dir: Path, comfi_root: Path, jobs: int, **kwargs
+    zenodo_id: str,
+    download_dir: Path,
+    comfi_root: Path,
+    jobs: int,
+    delete_zip: bool,
+    exclude: list[str],
+    **kwargs,
 ):
     download_dir.mkdir(parents=True, exist_ok=True)
     limits = httpx.Limits(max_connections=jobs)
@@ -139,12 +192,19 @@ async def main(
         logger.info("Requesting files from zenodo…")
         entries = await fetch_entries(client, zenodo_id, download_dir)
 
+        # Apply exclude BEFORE downloading
+        to_skip = [e for e in entries if _should_skip(e.name, exclude)]
+        if to_skip:
+            for e in to_skip:
+                logger.info("Skipping per --exclude: %s", e.name)
+        entries = [e for e in entries if not _should_skip(e.name, exclude)]
+
         logger.info("Downloading entries")
         await asyncio.gather(*(entry.download(client) for entry in entries))
 
         logger.info("Extracting entries")
         for entry in entries:
-            entry.extract()
+            entry.extract(delete_zip)
 
     logger.info("Generating %s directory", comfi_root)
 
@@ -154,19 +214,31 @@ async def main(
     for folder in download_dir.glob("videos*"):
         if not folder.is_dir():
             continue
-        for child in (folder / folder.name).iterdir():
-            (path / child.name).symlink_to(
-                target=child.absolute(), target_is_directory=child.is_dir()
-            )
+        inner = folder / folder.name
+        if not inner.exists():
+            logger.debug("Videos inner folder missing, skipping: %s", inner)
+            continue
+        for child in inner.iterdir():
+            target = child.absolute()
+            link = path / child.name
+            if link.exists():
+                continue
+            link.symlink_to(target=target, target_is_directory=child.is_dir())
 
-    # Symling everything else
+    # Symlink everything else (guard against missing dirs)
     for folder in ["cam_params", "forces", "mocap", "robot", "metadata"]:
         path = comfi_root / folder
         path.mkdir(parents=True, exist_ok=True)
-        for child in (download_dir / folder / folder).iterdir():
-            (path / child.name).symlink_to(
-                target=child.absolute(), target_is_directory=child.is_dir()
-            )
+        inner = download_dir / folder / folder
+        if not inner.exists():
+            logger.debug("Folder missing, skipping symlinks: %s", inner)
+            continue
+        for child in inner.iterdir():
+            target = child.absolute()
+            link = path / child.name
+            if link.exists():
+                continue
+            link.symlink_to(target=target, target_is_directory=child.is_dir())
 
 
 if __name__ == "__main__":

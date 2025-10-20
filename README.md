@@ -38,7 +38,12 @@ Data from Zenodo (https://zenodo.org/records/17223909) should be downloaded and 
 A script is provided for this:
 
 ```bash
-./scripts/download.py
+./scripts/download.py --delete-zip
+```
+
+You can also exclude some .zip files if they are already downloaded for instance using:
+```bash
+./scripts/download.py --delete-zip --exclude mocap cam_params
 ```
 
 1. **Human pose estimation (HPE)**
@@ -57,8 +62,12 @@ Triangulate keypoints from multiple camera views (can be done with any set of ca
 ```bash
 ./scripts/run_triangulation.py \
     --id 1012 \
-    --task RobotWelding
+    --task RobotWelding \
+    --cams 0 2
 ```
+
+**Note:** For all visualization scripts, the video of the visualization can be saved by setting --save-video as an option to run the script
+
 2.1 **Visualize triangulated data:**
 ```bash
 ./scripts/visualization/viz_jcp.py \

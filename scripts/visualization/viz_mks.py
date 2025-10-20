@@ -2,11 +2,13 @@
 import os
 import argparse
 from pathlib import Path
+from re import split
 import numpy as np
 import pandas as pd
 import meshcat
 from pinocchio.visualize import MeshcatVisualizer
 import time
+import imageio
 
 from comfi_examples.utils import read_mks_data
 from comfi_examples.viz_utils import add_markers_to_meshcat, set_markers_frame
@@ -98,6 +100,10 @@ def parse_args():
         default=None,
         help="Stop frame index (exclusive). Default: None (till end)",
     )
+    p.add_argument(
+        "--save-video", action="store_true", help="Save a video of the visualization"
+    )
+
     return p.parse_args()
 
 
@@ -141,6 +147,16 @@ def main():
     if not mks_csv_path.exists():
         raise FileNotFoundError(
             f"CSV not found: the task {args.task} is not available for id {args.subject_id}"
+        )
+
+    if args.save_video:
+        video_path = (
+            Path("output").resolve()
+            / "mocap"
+            / split_folder
+            / args.subject_id
+            / args.task
+            / f"viz_mks.mp4"
         )
 
     # Load CSVs
@@ -198,17 +214,49 @@ def main():
     )
 
     # Animate
-    for i in range(start, stop):
-        set_markers_frame(viewer, mks_dict, i, marker_names=mks_names, unit_scale=1.0)
+    if args.save_video:
+        set_markers_frame(
+            viewer, mks_dict, start, marker_names=mks_names, unit_scale=1.0
+        )
         if args.with_jcp:
             set_markers_frame(
-                viewer, jcp_dict, i, marker_names=jcp_names, unit_scale=1.0
+                viewer, jcp_dict, start, marker_names=jcp_names, unit_scale=1.0
             )
-        time.sleep(0.60 * (1 / args.freq))
+        input(
+            "Pause to set the view in Meshcat, press Enter to start the visualization"
+        )
+        images = []
+        for i in range(start, stop):
+            set_markers_frame(
+                viewer, mks_dict, i, marker_names=mks_names, unit_scale=1.0
+            )
+            if args.with_jcp:
+                set_markers_frame(
+                    viewer, jcp_dict, i, marker_names=jcp_names, unit_scale=1.0
+                )
+            images.append(viz.viewer.get_image())
+            time.sleep(0.60 * (1 / args.freq))
 
-    print(
-        f"[OK] Visualized {stop - start} frames | ID {args.subject_id} | Task {args.task} | {args.freq} Hz"
-    )
+        os.makedirs(video_path.parent, exist_ok=True)
+        imageio.mimsave(video_path, images, fps=args.freq)
+        print(
+            f"[OK] Visualized {stop - start} frames | ID {args.subject_id} | Task {args.task} | {args.freq} Hz"
+        )
+        print(f"[VIDEO] Video saved to {video_path}")
+    else:
+        for i in range(start, stop):
+            set_markers_frame(
+                viewer, mks_dict, i, marker_names=mks_names, unit_scale=1.0
+            )
+            if args.with_jcp:
+                set_markers_frame(
+                    viewer, jcp_dict, i, marker_names=jcp_names, unit_scale=1.0
+                )
+            time.sleep(0.90 * (1 / args.freq))
+
+        print(
+            f"[OK] Visualized {stop - start} frames | ID {args.subject_id} | Task {args.task} | {args.freq} Hz"
+        )
 
 
 if __name__ == "__main__":

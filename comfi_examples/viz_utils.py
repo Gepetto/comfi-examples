@@ -4,6 +4,8 @@ import numpy as np
 import pinocchio as pin
 import meshcat
 import time
+import imageio
+import os
 
 
 def meshcat_material(r, g, b, a):
@@ -323,9 +325,14 @@ def animate(
     forceplates_dims_and_centers,
     sync,
     freq,
-    step=5,
+    video_path=None,
+    step=1,
     i0=0,
+    ifinal=None,
 ):
+    if ifinal is None:
+        ifinal = len(q_ref)
+
     unit_scale = 1.0
     viewer = scene.viewer
     fp_dims, fp_centers = forceplates_dims_and_centers
@@ -335,7 +342,7 @@ def animate(
         jcp,
         marker_names=jcp_names,
         radius=0.020,
-        default_color=0xFF0000,
+        default_color=0x00FF00,
         opacity=0.95,
     )
 
@@ -353,11 +360,11 @@ def animate(
     # Mapping capteurs -> plateformes
     sensor_mapping = {1: 0, 2: 1, 3: 2}
 
-    for i in range(i0, len(q_ref), step):
+    if video_path is not None:
         # draw JCP spheres
-        set_markers_frame(viewer, jcp, i, marker_names=jcp_names, unit_scale=unit_scale)
-
-        # set_markers_frame(viewer, mks_dict, i, marker_names=mks_names, unit_scale=unit_scale)
+        set_markers_frame(
+            viewer, jcp, i0, marker_names=jcp_names, unit_scale=unit_scale
+        )
 
         jcp_hpe_renamed = []
         if jcp_hpe is not None:
@@ -366,7 +373,7 @@ def animate(
             set_markers_frame(
                 viewer,
                 jcp_hpe_renamed,
-                i,
+                i0,
                 marker_names=jcp_names_hpe,
                 unit_scale=unit_scale,
             )
@@ -374,11 +381,11 @@ def animate(
         if sync is not None:
             cam_idx = sync["cam_idx"]
             # robot frames exist in q_robot indices [0 .. len-1]
-            rr = i - cam_idx
+            rr = i0 - cam_idx
             if 0 <= rr < len(q_robot):
                 scene.viz_robot.display(q_robot[rr, :])
 
-        scene.viz_human.display(q_ref[i, :])
+        scene.viz_human.display(q_ref[i0, :])
 
         if force_data is not None:
             for sensor_id in force_data.keys():
@@ -386,16 +393,16 @@ def animate(
                 scene.viz_human.viewer[arrow_name].delete()
 
             for sensor_id, data in force_data.items():
-                if i < len(data["Fx"]) and sensor_id in sensor_mapping:
+                if i0 < len(data["Fx"]) and sensor_id in sensor_mapping:
                     plate_idx = sensor_mapping[sensor_id]
                     if plate_idx < len(fp_centers):
-                        # Données de la frame i
-                        fx = data["Fx"][i]
-                        fy = data["Fy"][i]
-                        fz = -1 * (data["Fz"][i])
-                        mx = data["Mx"][i]
-                        my = data["My"][i]
-                        mz = data["Mz"][i]
+                        # frame i0 data
+                        fx = data["Fx"][i0]
+                        fy = data["Fy"][i0]
+                        fz = -1 * (data["Fz"][i0])
+                        mx = data["Mx"][i0]
+                        my = data["My"][i0]
+                        mz = data["Mz"][i0]
 
                         if not np.any(np.isnan([fx, fy, fz])):
                             phi = pin.Force(
@@ -409,7 +416,142 @@ def animate(
                             display_force_meshcat(
                                 scene.viz_human, phi, M_se3, f"force_sensor{sensor_id}"
                             )
-        time.sleep(0.90 * 1 / freq)
+        input(
+            "Pause to set the view in Meshcat, press Enter to start the visualization"
+        )
+        images = []
+        for i in range(i0, ifinal, step):
+            # draw JCP spheres
+            set_markers_frame(
+                viewer, jcp, i, marker_names=jcp_names, unit_scale=unit_scale
+            )
+
+            # set_markers_frame(viewer, mks_dict, i, marker_names=mks_names, unit_scale=unit_scale)
+
+            jcp_hpe_renamed = []
+            if jcp_hpe is not None:
+                for d in jcp_hpe:
+                    jcp_hpe_renamed.append({k + "_hpe": v for k, v in d.items()})
+                set_markers_frame(
+                    viewer,
+                    jcp_hpe_renamed,
+                    i,
+                    marker_names=jcp_names_hpe,
+                    unit_scale=unit_scale,
+                )
+
+            if sync is not None:
+                cam_idx = sync["cam_idx"]
+                # robot frames exist in q_robot indices [0 .. len-1]
+                rr = i - cam_idx
+                if 0 <= rr < len(q_robot):
+                    scene.viz_robot.display(q_robot[rr, :])
+
+            scene.viz_human.display(q_ref[i, :])
+
+            if force_data is not None:
+                for sensor_id in force_data.keys():
+                    arrow_name = f"force_sensor{sensor_id}"
+                    scene.viz_human.viewer[arrow_name].delete()
+
+                for sensor_id, data in force_data.items():
+                    if i < len(data["Fx"]) and sensor_id in sensor_mapping:
+                        plate_idx = sensor_mapping[sensor_id]
+                        if plate_idx < len(fp_centers):
+                            # Données de la frame i
+                            fx = data["Fx"][i]
+                            fy = data["Fy"][i]
+                            fz = -1 * (data["Fz"][i])
+                            mx = data["Mx"][i]
+                            my = data["My"][i]
+                            mz = data["Mz"][i]
+
+                            if not np.any(np.isnan([fx, fy, fz])):
+                                phi = pin.Force(
+                                    np.array([fx, fy, fz]),
+                                    np.array([mx, my, mz]) * 1e-3,
+                                )
+
+                                M_se3 = pin.SE3.Identity()
+                                M_se3.translation = np.array(fp_centers[plate_idx])
+                                M_se3.translation[2] += 0.02
+
+                                display_force_meshcat(
+                                    scene.viz_human,
+                                    phi,
+                                    M_se3,
+                                    f"force_sensor{sensor_id}",
+                                )
+            images.append(scene.viz_human.viewer.get_image())
+            time.sleep(0.90 * 1 / freq)
+        os.makedirs(video_path.parent, exist_ok=True)
+        imageio.mimsave(video_path, images, fps=freq)
+        print(f"[VIDEO] Video saved to {video_path}")
+
+    else:
+        for i in range(i0, ifinal, step):
+            # draw JCP spheres
+            set_markers_frame(
+                viewer, jcp, i, marker_names=jcp_names, unit_scale=unit_scale
+            )
+
+            # set_markers_frame(viewer, mks_dict, i, marker_names=mks_names, unit_scale=unit_scale)
+
+            jcp_hpe_renamed = []
+            if jcp_hpe is not None:
+                for d in jcp_hpe:
+                    jcp_hpe_renamed.append({k + "_hpe": v for k, v in d.items()})
+                set_markers_frame(
+                    viewer,
+                    jcp_hpe_renamed,
+                    i,
+                    marker_names=jcp_names_hpe,
+                    unit_scale=unit_scale,
+                )
+
+            if sync is not None:
+                cam_idx = sync["cam_idx"]
+                # robot frames exist in q_robot indices [0 .. len-1]
+                rr = i - cam_idx
+                if 0 <= rr < len(q_robot):
+                    scene.viz_robot.display(q_robot[rr, :])
+
+            scene.viz_human.display(q_ref[i, :])
+
+            if force_data is not None:
+                for sensor_id in force_data.keys():
+                    arrow_name = f"force_sensor{sensor_id}"
+                    scene.viz_human.viewer[arrow_name].delete()
+
+                for sensor_id, data in force_data.items():
+                    if i < len(data["Fx"]) and sensor_id in sensor_mapping:
+                        plate_idx = sensor_mapping[sensor_id]
+                        if plate_idx < len(fp_centers):
+                            # Données de la frame i
+                            fx = data["Fx"][i]
+                            fy = data["Fy"][i]
+                            fz = -1 * (data["Fz"][i])
+                            mx = data["Mx"][i]
+                            my = data["My"][i]
+                            mz = data["Mz"][i]
+
+                            if not np.any(np.isnan([fx, fy, fz])):
+                                phi = pin.Force(
+                                    np.array([fx, fy, fz]),
+                                    np.array([mx, my, mz]) * 1e-3,
+                                )
+
+                                M_se3 = pin.SE3.Identity()
+                                M_se3.translation = np.array(fp_centers[plate_idx])
+                                M_se3.translation[2] += 0.02
+
+                                display_force_meshcat(
+                                    scene.viz_human,
+                                    phi,
+                                    M_se3,
+                                    f"force_sensor{sensor_id}",
+                                )
+            time.sleep(0.90 * 1 / freq)
 
     #     images.append(viewer.get_image())
 

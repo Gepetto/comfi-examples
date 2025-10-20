@@ -299,6 +299,10 @@ def parse_args():
         help="Specify JCP HPE mode if --with-jcp-hpe is set.",
     )
 
+    p.add_argument(
+        "--save-video", action="store_true", help="Save a video of the visualization"
+    )
+
     args = p.parse_args()
     if args.with_jcp_hpe and args.jcp_hpe_mode is None:
         p.error("--jcp-hpe-mode is required when --with-jcp-hpe is set.")
@@ -528,6 +532,17 @@ def main():
             / f"3d_keypoints_{args.jcp_hpe_mode}.csv"
         )
 
+    if args.save_video:
+        split_folder = "aligned" if args.freq == 40 else "raw"
+        Paths.video = (
+            Path("output").resolve()
+            / "all_data"
+            / split_folder
+            / args.subject_id
+            / args.task
+            / "viz_all_data.mp4"
+        )
+
     # read all data
     payload = load_all_data(paths, start_sample=0, converter=1000.0)
     q_ref = payload["q_ref"]
@@ -590,21 +605,44 @@ def main():
         sync = None
 
     # animation
-    animate(
-        scene,
-        jcp_mocap,
-        jcp_names,
-        jcp_hpe,
-        jcp_names_hpe,
-        q_ref,
-        q_robot,
-        force_data,
-        (fp_dims, fp_centers),
-        sync,
-        paths.freq_anim,
-        step=5,
-        i0=0,
-    )
+    if args.save_video:
+        video_path = Paths.video
+        print(paths.freq_anim)
+        animate(
+            scene,
+            jcp_mocap,
+            jcp_names,
+            jcp_hpe,
+            jcp_names_hpe,
+            q_ref,
+            q_robot,
+            force_data,
+            (fp_dims, fp_centers),
+            sync,
+            paths.freq_anim,
+            video_path=video_path,
+            step=1,
+            i0=args.start,
+            ifinal=args.stop,
+        )
+    else:
+        animate(
+            scene,
+            jcp_mocap,
+            jcp_names,
+            jcp_hpe,
+            jcp_names_hpe,
+            q_ref,
+            q_robot,
+            force_data,
+            (fp_dims, fp_centers),
+            sync,
+            paths.freq_anim,
+            video_path=None,
+            step=1,
+            i0=args.start,
+            ifinal=args.stop,
+        )
 
 
 if __name__ == "__main__":
