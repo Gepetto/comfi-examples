@@ -105,6 +105,17 @@ Visualize multimodal data and animate motion capture sequences, including refere
      --jcp-hpe-mode aligned
 
 ```
+
+For comparison: 
+```bash
+./scripts/visualization/viz_comparative_data.py \
+     --id 4279 \
+     --task RobotWelding \
+     --freq 40 \
+     --save_video
+
+```
+
 5. **Extract joint center positions from mocap markers (using our markerset)**
 
 The extracted JCP are saved in the output folder.
