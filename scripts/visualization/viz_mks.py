@@ -2,7 +2,6 @@
 import os
 import argparse
 from pathlib import Path
-from re import split
 import numpy as np
 import pandas as pd
 import meshcat
@@ -156,7 +155,7 @@ def main():
             / split_folder
             / args.subject_id
             / args.task
-            / f"viz_mks.mp4"
+            / "viz_mks.mp4"
         )
 
     # Load CSVs

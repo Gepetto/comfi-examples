@@ -158,7 +158,7 @@ def main():
             / "res_hpe"
             / args.subject_id
             / args.task
-            / f"viz_jcp.mp4"
+            / "viz_jcp.mp4"
         )
 
     # Load CSV
