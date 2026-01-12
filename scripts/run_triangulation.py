@@ -1,4 +1,6 @@
 #!/usr/bin/env python3
+# This script applies triangulation to 2D keypoints from multiple videos to obtain a 3D skeleton.
+
 import os
 import argparse
 from pathlib import Path

@@ -1,4 +1,6 @@
 #!/usr/bin/env python3
+# This script applies a Human Pose Estimation (HPE) algorithm from rtmlib to video sequences in order to extract 2D skeletal keypoints.
+
 import argparse
 from pathlib import Path
 import cv2

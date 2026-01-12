@@ -21,6 +21,7 @@ dependencies = [
     "opencv-python>=4.12.0.88",
     "pandas>=2.3.3",
     "pin>=3.7.0",
+    "casadi>=3.6.5",
     "pyyaml>=6.0.3",
     "rtmlib>=0.0.13",
     "scipy>=1.15.3",
