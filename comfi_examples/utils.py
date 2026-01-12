@@ -3,26 +3,28 @@ import numpy as np
 import pandas as pd
 import yaml
 import matplotlib.pyplot as plt
-import pinocchio as pin 
+import pinocchio as pin
 import yaml
+
 
 def Rquat(x, y, z, w):
     q = pin.Quaternion(x, y, z, w)
     q.normalize()
     return q.matrix()
 
+
 def read_subject_yaml(file_path):
     """
     Lit un fichier YAML et retourne directement id, height, weight et gender.
     """
-    with open(file_path, 'r') as f:
+    with open(file_path, "r") as f:
         data = yaml.safe_load(f)
-    
-    subject_id = data.get('id')
-    height = data.get('height')
-    weight = data.get('weight')
-    gender = data.get('gender')
-    
+
+    subject_id = data.get("id")
+    height = data.get("height")
+    weight = data.get("weight")
+    gender = data.get("gender")
+
     return subject_id, height, weight, gender
 
 

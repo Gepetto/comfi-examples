@@ -3,7 +3,7 @@ import pinocchio as pin
 import numpy as np
 from comfi_examples.linear_algebra_utils import col_vector_3D
 from example_robot_data import load
-from comfi_examples.human_model_utils import * 
+from comfi_examples.human_model_utils import *
 
 
 class Robot(RobotWrapper):
@@ -98,145 +98,325 @@ def load_robot_panda():
     robot = load("panda")
     return robot.model, robot.collision_model, robot.visual_model, robot.data
 
-def scale_human_model(model, mks_positions, with_hand=True,gender='male',subject_height=1.80):
 
-    sgts_poses = construct_segments_frames(mks_positions, with_hand=with_hand, gender=gender,subject_height=subject_height)
-    local_segments_positions = get_local_segments_positions(sgts_poses,with_hand=True)
+def scale_human_model(
+    model, mks_positions, with_hand=True, gender="male", subject_height=1.80
+):
+    sgts_poses = construct_segments_frames(
+        mks_positions, with_hand=with_hand, gender=gender, subject_height=subject_height
+    )
+    local_segments_positions = get_local_segments_positions(sgts_poses, with_hand=True)
 
-    model.jointPlacements[model.getJointId('left_hip_Z')].translation=local_segments_positions['thighL']
-    model.jointPlacements[model.getJointId('left_knee_Z')].translation=col_vector_3D(0, -np.linalg.norm(local_segments_positions['shankL']),0)
-    model.jointPlacements[model.getJointId('left_ankle_Z')].translation=col_vector_3D(0, -np.linalg.norm(local_segments_positions['footL']),0)
+    model.jointPlacements[
+        model.getJointId("left_hip_Z")
+    ].translation = local_segments_positions["thighL"]
+    model.jointPlacements[model.getJointId("left_knee_Z")].translation = col_vector_3D(
+        0, -np.linalg.norm(local_segments_positions["shankL"]), 0
+    )
+    model.jointPlacements[model.getJointId("left_ankle_Z")].translation = col_vector_3D(
+        0, -np.linalg.norm(local_segments_positions["footL"]), 0
+    )
 
-    model.jointPlacements[model.getJointId('middle_lumbar_Z')].translation=np.array([0,0,0])
-    model.jointPlacements[model.getJointId('middle_thoracic_Z')].translation=col_vector_3D(0, np.linalg.norm(local_segments_positions['thorax']),0)
+    model.jointPlacements[model.getJointId("middle_lumbar_Z")].translation = np.array(
+        [0, 0, 0]
+    )
+    model.jointPlacements[
+        model.getJointId("middle_thoracic_Z")
+    ].translation = col_vector_3D(
+        0, np.linalg.norm(local_segments_positions["thorax"]), 0
+    )
 
-    model.jointPlacements[model.getJointId('left_clavicle_joint_X')].translation=col_vector_3D(0, np.linalg.norm(local_segments_positions['torso']),0)
-    model.jointPlacements[model.getJointId('right_clavicle_joint_X')].translation=col_vector_3D(0, np.linalg.norm(local_segments_positions['torso']),0)
-    model.jointPlacements[model.getJointId('middle_cervical_Z')].translation=col_vector_3D(0, np.linalg.norm(local_segments_positions['torso']),0)
-   
-    model.jointPlacements[model.getJointId('left_shoulder_Z')].translation=local_segments_positions['upperarmL']
-    model.jointPlacements[model.getJointId('left_elbow_Z')].translation=col_vector_3D(0, -np.linalg.norm(local_segments_positions['lowerarmL']),0)
+    model.jointPlacements[
+        model.getJointId("left_clavicle_joint_X")
+    ].translation = col_vector_3D(
+        0, np.linalg.norm(local_segments_positions["torso"]), 0
+    )
+    model.jointPlacements[
+        model.getJointId("right_clavicle_joint_X")
+    ].translation = col_vector_3D(
+        0, np.linalg.norm(local_segments_positions["torso"]), 0
+    )
+    model.jointPlacements[
+        model.getJointId("middle_cervical_Z")
+    ].translation = col_vector_3D(
+        0, np.linalg.norm(local_segments_positions["torso"]), 0
+    )
 
-    model.jointPlacements[model.getJointId('right_shoulder_Z')].translation=local_segments_positions['upperarmR']
-    model.jointPlacements[model.getJointId('right_elbow_Z')].translation=col_vector_3D(0, -np.linalg.norm(local_segments_positions['lowerarmR']),0)
-    model.jointPlacements[model.getJointId('right_hip_Z')].translation=local_segments_positions['thighR']
-    model.jointPlacements[model.getJointId('right_knee_Z')].translation=col_vector_3D(0, -np.linalg.norm(local_segments_positions['shankR']),0)
-    model.jointPlacements[model.getJointId('right_ankle_Z')].translation=col_vector_3D(0, -np.linalg.norm(local_segments_positions['footR']),0)
+    model.jointPlacements[
+        model.getJointId("left_shoulder_Z")
+    ].translation = local_segments_positions["upperarmL"]
+    model.jointPlacements[model.getJointId("left_elbow_Z")].translation = col_vector_3D(
+        0, -np.linalg.norm(local_segments_positions["lowerarmL"]), 0
+    )
+
+    model.jointPlacements[
+        model.getJointId("right_shoulder_Z")
+    ].translation = local_segments_positions["upperarmR"]
+    model.jointPlacements[
+        model.getJointId("right_elbow_Z")
+    ].translation = col_vector_3D(
+        0, -np.linalg.norm(local_segments_positions["lowerarmR"]), 0
+    )
+    model.jointPlacements[
+        model.getJointId("right_hip_Z")
+    ].translation = local_segments_positions["thighR"]
+    model.jointPlacements[model.getJointId("right_knee_Z")].translation = col_vector_3D(
+        0, -np.linalg.norm(local_segments_positions["shankR"]), 0
+    )
+    model.jointPlacements[
+        model.getJointId("right_ankle_Z")
+    ].translation = col_vector_3D(
+        0, -np.linalg.norm(local_segments_positions["footR"]), 0
+    )
 
     if with_hand:
-        model.jointPlacements[model.getJointId('left_wrist_Z')].translation=col_vector_3D(0, -np.linalg.norm(local_segments_positions['handL']),0)
-        model.jointPlacements[model.getJointId('right_wrist_Z')].translation=col_vector_3D(0, -np.linalg.norm(local_segments_positions['handR']),0)
+        model.jointPlacements[
+            model.getJointId("left_wrist_Z")
+        ].translation = col_vector_3D(
+            0, -np.linalg.norm(local_segments_positions["handL"]), 0
+        )
+        model.jointPlacements[
+            model.getJointId("right_wrist_Z")
+        ].translation = col_vector_3D(
+            0, -np.linalg.norm(local_segments_positions["handR"]), 0
+        )
     return model
 
-def mks_registration(model,mks_positions, with_hand=True, gender='male',subject_height=1.8):
-    #attach mks to segment and joint
-    sgts_poses = construct_segments_frames(mks_positions, with_hand=with_hand, gender='male',subject_height=1.8)
+
+def mks_registration(
+    model, mks_positions, with_hand=True, gender="male", subject_height=1.8
+):
+    # attach mks to segment and joint
+    sgts_poses = construct_segments_frames(
+        mks_positions, with_hand=with_hand, gender="male", subject_height=1.8
+    )
     sgts_mks_dict = get_segments_mks_dict(mks_positions)
-    mks_local_positions = get_local_mks_positions(sgts_poses, mks_positions, sgts_mks_dict)
+    mks_local_positions = get_local_mks_positions(
+        sgts_poses, mks_positions, sgts_mks_dict
+    )
 
     inertia = pin.Inertia.Zero()
 
-    idx_frame = model.getFrameId('middle_pelvis')
-    joint = model.getJointId('root_joint')
+    idx_frame = model.getFrameId("middle_pelvis")
+    joint = model.getJointId("root_joint")
     for i in sgts_mks_dict["pelvis"]:
-        frame = pin.Frame(i,joint,idx_frame,pin.SE3(np.eye(3,3), np.matrix(mks_local_positions[i]).T),pin.FrameType.OP_FRAME, inertia) 
-        model.addFrame(frame,False)
+        frame = pin.Frame(
+            i,
+            joint,
+            idx_frame,
+            pin.SE3(np.eye(3, 3), np.matrix(mks_local_positions[i]).T),
+            pin.FrameType.OP_FRAME,
+            inertia,
+        )
+        model.addFrame(frame, False)
 
-    idx_frame = model.getFrameId('middle_thorax')
-    joint = model.getJointId('middle_thoracic_Y')
+    idx_frame = model.getFrameId("middle_thorax")
+    joint = model.getJointId("middle_thoracic_Y")
     for i in sgts_mks_dict["thorax"]:
-        frame = pin.Frame(i,joint,idx_frame,pin.SE3(np.eye(3,3), np.matrix(mks_local_positions[i]).T),pin.FrameType.OP_FRAME, inertia) 
-        model.addFrame(frame,False)
-    
-    idx_frame = model.getFrameId('middle_head')
-    joint = model.getJointId('middle_cervical_Y')
+        frame = pin.Frame(
+            i,
+            joint,
+            idx_frame,
+            pin.SE3(np.eye(3, 3), np.matrix(mks_local_positions[i]).T),
+            pin.FrameType.OP_FRAME,
+            inertia,
+        )
+        model.addFrame(frame, False)
+
+    idx_frame = model.getFrameId("middle_head")
+    joint = model.getJointId("middle_cervical_Y")
     for i in sgts_mks_dict["head"]:
-        frame = pin.Frame(i,joint,idx_frame,pin.SE3(np.eye(3,3), np.matrix(mks_local_positions[i]).T),pin.FrameType.OP_FRAME, inertia) 
-        idx_frame = model.addFrame(frame,False)
+        frame = pin.Frame(
+            i,
+            joint,
+            idx_frame,
+            pin.SE3(np.eye(3, 3), np.matrix(mks_local_positions[i]).T),
+            pin.FrameType.OP_FRAME,
+            inertia,
+        )
+        idx_frame = model.addFrame(frame, False)
 
-    idx_frame = model.getFrameId('right_clavicle')
-    joint = model.getJointId('right_clavicle_joint_X')
+    idx_frame = model.getFrameId("right_clavicle")
+    joint = model.getJointId("right_clavicle_joint_X")
     for i in sgts_mks_dict["right_clavicle"]:
-        frame = pin.Frame(i,joint,idx_frame,pin.SE3(np.eye(3,3), np.matrix(mks_local_positions[i]).T),pin.FrameType.OP_FRAME, inertia) 
-        idx_frame = model.addFrame(frame,False)
-    
-    idx_frame = model.getFrameId('left_clavicle')
-    joint = model.getJointId('left_clavicle_joint_X')
-    for i in sgts_mks_dict["left_clavicle"]:
-        frame = pin.Frame(i,joint,idx_frame,pin.SE3(np.eye(3,3), np.matrix(mks_local_positions[i]).T),pin.FrameType.OP_FRAME, inertia) 
-        idx_frame = model.addFrame(frame,False)
+        frame = pin.Frame(
+            i,
+            joint,
+            idx_frame,
+            pin.SE3(np.eye(3, 3), np.matrix(mks_local_positions[i]).T),
+            pin.FrameType.OP_FRAME,
+            inertia,
+        )
+        idx_frame = model.addFrame(frame, False)
 
-    idx_frame = model.getFrameId('right_upperarm')
-    joint = model.getJointId('right_shoulder_Y')
+    idx_frame = model.getFrameId("left_clavicle")
+    joint = model.getJointId("left_clavicle_joint_X")
+    for i in sgts_mks_dict["left_clavicle"]:
+        frame = pin.Frame(
+            i,
+            joint,
+            idx_frame,
+            pin.SE3(np.eye(3, 3), np.matrix(mks_local_positions[i]).T),
+            pin.FrameType.OP_FRAME,
+            inertia,
+        )
+        idx_frame = model.addFrame(frame, False)
+
+    idx_frame = model.getFrameId("right_upperarm")
+    joint = model.getJointId("right_shoulder_Y")
     for i in sgts_mks_dict["upperarmR"]:
-        frame = pin.Frame(i,joint,idx_frame,pin.SE3(np.eye(3,3), np.matrix(mks_local_positions[i]).T),pin.FrameType.OP_FRAME, inertia) 
-        idx_frame = model.addFrame(frame,False)
-    
-    idx_frame = model.getFrameId('left_upperarm')
-    joint = model.getJointId('left_shoulder_Y')
+        frame = pin.Frame(
+            i,
+            joint,
+            idx_frame,
+            pin.SE3(np.eye(3, 3), np.matrix(mks_local_positions[i]).T),
+            pin.FrameType.OP_FRAME,
+            inertia,
+        )
+        idx_frame = model.addFrame(frame, False)
+
+    idx_frame = model.getFrameId("left_upperarm")
+    joint = model.getJointId("left_shoulder_Y")
     for i in sgts_mks_dict["upperarmL"]:
-        frame = pin.Frame(i,joint,idx_frame,pin.SE3(np.eye(3,3), np.matrix(mks_local_positions[i]).T),pin.FrameType.OP_FRAME, inertia) 
-        idx_frame = model.addFrame(frame,False)
-    
-    idx_frame = model.getFrameId('right_lowerarm')
-    joint = model.getJointId('right_elbow_Y')
+        frame = pin.Frame(
+            i,
+            joint,
+            idx_frame,
+            pin.SE3(np.eye(3, 3), np.matrix(mks_local_positions[i]).T),
+            pin.FrameType.OP_FRAME,
+            inertia,
+        )
+        idx_frame = model.addFrame(frame, False)
+
+    idx_frame = model.getFrameId("right_lowerarm")
+    joint = model.getJointId("right_elbow_Y")
     for i in sgts_mks_dict["lowerarmR"]:
-        frame = pin.Frame(i,joint,idx_frame,pin.SE3(np.eye(3,3), np.matrix(mks_local_positions[i]).T),pin.FrameType.OP_FRAME, inertia) 
-        idx_frame = model.addFrame(frame,False)
-    
-    idx_frame = model.getFrameId('left_lowerarm')
-    joint = model.getJointId('left_elbow_Y')
+        frame = pin.Frame(
+            i,
+            joint,
+            idx_frame,
+            pin.SE3(np.eye(3, 3), np.matrix(mks_local_positions[i]).T),
+            pin.FrameType.OP_FRAME,
+            inertia,
+        )
+        idx_frame = model.addFrame(frame, False)
+
+    idx_frame = model.getFrameId("left_lowerarm")
+    joint = model.getJointId("left_elbow_Y")
     for i in sgts_mks_dict["lowerarmL"]:
-        frame = pin.Frame(i,joint,idx_frame,pin.SE3(np.eye(3,3), np.matrix(mks_local_positions[i]).T),pin.FrameType.OP_FRAME, inertia) 
-        idx_frame = model.addFrame(frame,False)
+        frame = pin.Frame(
+            i,
+            joint,
+            idx_frame,
+            pin.SE3(np.eye(3, 3), np.matrix(mks_local_positions[i]).T),
+            pin.FrameType.OP_FRAME,
+            inertia,
+        )
+        idx_frame = model.addFrame(frame, False)
 
     if with_hand:
-        idx_frame = model.getFrameId('right_hand')
-        joint = model.getJointId('right_wrist_X')
+        idx_frame = model.getFrameId("right_hand")
+        joint = model.getJointId("right_wrist_X")
         for i in sgts_mks_dict["handR"]:
-            frame = pin.Frame(i,joint,idx_frame,pin.SE3(np.eye(3,3), np.matrix(mks_local_positions[i]).T),pin.FrameType.OP_FRAME, inertia) 
-            idx_frame = model.addFrame(frame,False)
+            frame = pin.Frame(
+                i,
+                joint,
+                idx_frame,
+                pin.SE3(np.eye(3, 3), np.matrix(mks_local_positions[i]).T),
+                pin.FrameType.OP_FRAME,
+                inertia,
+            )
+            idx_frame = model.addFrame(frame, False)
 
-        idx_frame = model.getFrameId('left_hand')
-        joint = model.getJointId('left_wrist_X')
+        idx_frame = model.getFrameId("left_hand")
+        joint = model.getJointId("left_wrist_X")
         for i in sgts_mks_dict["handL"]:
-            frame = pin.Frame(i,joint,idx_frame,pin.SE3(np.eye(3,3), np.matrix(mks_local_positions[i]).T),pin.FrameType.OP_FRAME, inertia) 
-            idx_frame = model.addFrame(frame,False)
-        
-    idx_frame = model.getFrameId('right_upperleg')
-    joint = model.getJointId('right_hip_Y')
+            frame = pin.Frame(
+                i,
+                joint,
+                idx_frame,
+                pin.SE3(np.eye(3, 3), np.matrix(mks_local_positions[i]).T),
+                pin.FrameType.OP_FRAME,
+                inertia,
+            )
+            idx_frame = model.addFrame(frame, False)
+
+    idx_frame = model.getFrameId("right_upperleg")
+    joint = model.getJointId("right_hip_Y")
     for i in sgts_mks_dict["thighR"]:
-        frame = pin.Frame(i,joint,idx_frame,pin.SE3(np.eye(3,3), np.matrix(mks_local_positions[i]).T),pin.FrameType.OP_FRAME, inertia) 
-        idx_frame = model.addFrame(frame,False)
-    
-    idx_frame = model.getFrameId('left_upperleg')
-    joint = model.getJointId('left_hip_Y')
+        frame = pin.Frame(
+            i,
+            joint,
+            idx_frame,
+            pin.SE3(np.eye(3, 3), np.matrix(mks_local_positions[i]).T),
+            pin.FrameType.OP_FRAME,
+            inertia,
+        )
+        idx_frame = model.addFrame(frame, False)
+
+    idx_frame = model.getFrameId("left_upperleg")
+    joint = model.getJointId("left_hip_Y")
     for i in sgts_mks_dict["thighL"]:
-        frame = pin.Frame(i,joint,idx_frame,pin.SE3(np.eye(3,3), np.matrix(mks_local_positions[i]).T),pin.FrameType.OP_FRAME, inertia) 
-        idx_frame = model.addFrame(frame,False)
-    
-    idx_frame = model.getFrameId('right_lowerleg')
-    joint = model.getJointId('right_knee_Z')
+        frame = pin.Frame(
+            i,
+            joint,
+            idx_frame,
+            pin.SE3(np.eye(3, 3), np.matrix(mks_local_positions[i]).T),
+            pin.FrameType.OP_FRAME,
+            inertia,
+        )
+        idx_frame = model.addFrame(frame, False)
+
+    idx_frame = model.getFrameId("right_lowerleg")
+    joint = model.getJointId("right_knee_Z")
     for i in sgts_mks_dict["shankR"]:
-        frame = pin.Frame(i,joint,idx_frame,pin.SE3(np.eye(3,3), np.matrix(mks_local_positions[i]).T),pin.FrameType.OP_FRAME, inertia) 
-        idx_frame = model.addFrame(frame,False)
-    
-    idx_frame = model.getFrameId('left_lowerleg')
-    joint = model.getJointId('left_knee_Z')
+        frame = pin.Frame(
+            i,
+            joint,
+            idx_frame,
+            pin.SE3(np.eye(3, 3), np.matrix(mks_local_positions[i]).T),
+            pin.FrameType.OP_FRAME,
+            inertia,
+        )
+        idx_frame = model.addFrame(frame, False)
+
+    idx_frame = model.getFrameId("left_lowerleg")
+    joint = model.getJointId("left_knee_Z")
     for i in sgts_mks_dict["shankL"]:
-        frame = pin.Frame(i,joint,idx_frame,pin.SE3(np.eye(3,3), np.matrix(mks_local_positions[i]).T),pin.FrameType.OP_FRAME, inertia) 
-        idx_frame = model.addFrame(frame,False)
-    
-    idx_frame = model.getFrameId('right_foot')
-    joint = model.getJointId('right_ankle_X')
+        frame = pin.Frame(
+            i,
+            joint,
+            idx_frame,
+            pin.SE3(np.eye(3, 3), np.matrix(mks_local_positions[i]).T),
+            pin.FrameType.OP_FRAME,
+            inertia,
+        )
+        idx_frame = model.addFrame(frame, False)
+
+    idx_frame = model.getFrameId("right_foot")
+    joint = model.getJointId("right_ankle_X")
     for i in sgts_mks_dict["footR"]:
-        frame = pin.Frame(i,joint,idx_frame,pin.SE3(np.eye(3,3), np.matrix(mks_local_positions[i]).T),pin.FrameType.OP_FRAME, inertia) 
-        idx_frame = model.addFrame(frame,False)
-    
-    idx_frame = model.getFrameId('left_foot')
-    joint = model.getJointId('left_ankle_X')
+        frame = pin.Frame(
+            i,
+            joint,
+            idx_frame,
+            pin.SE3(np.eye(3, 3), np.matrix(mks_local_positions[i]).T),
+            pin.FrameType.OP_FRAME,
+            inertia,
+        )
+        idx_frame = model.addFrame(frame, False)
+
+    idx_frame = model.getFrameId("left_foot")
+    joint = model.getJointId("left_ankle_X")
     for i in sgts_mks_dict["footL"]:
-        frame = pin.Frame(i,joint,idx_frame,pin.SE3(np.eye(3,3), np.matrix(mks_local_positions[i]).T),pin.FrameType.OP_FRAME, inertia) 
-        idx_frame = model.addFrame(frame,False)
+        frame = pin.Frame(
+            i,
+            joint,
+            idx_frame,
+            pin.SE3(np.eye(3, 3), np.matrix(mks_local_positions[i]).T),
+            pin.FrameType.OP_FRAME,
+            inertia,
+        )
+        idx_frame = model.addFrame(frame, False)
 
     return model

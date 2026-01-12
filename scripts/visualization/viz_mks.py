@@ -164,7 +164,7 @@ def main():
         mks_df, start_sample=0, converter=1000.0
     )
     mks_names = list(mks_start_sample_dict.keys())
-    
+
     if args.with_jcp:
         jcp_df = pd.read_csv(jcp_csv_path)
         jcp_dict, jcp_start_sample_dict = read_mks_data(
