@@ -1,7 +1,5 @@
-from pinocchio.robot_wrapper import RobotWrapper
-import pinocchio as pin
 import numpy as np
-from typing import List, Tuple, Dict
+from typing import Dict
 from comfi_examples.linear_algebra_utils import col_vector_3D
 
 from comfi_examples.linear_algebra_utils import (
@@ -538,9 +536,9 @@ def get_thorax_pose(mks_positions, gender="male", subject_height=1.80):
     vertical_direction = vertical_direction / np.linalg.norm(vertical_direction)
 
     trans_local = col_vector_3D(0.0, subject_height * abdomen_ratio, 0.0)
-    pelvis_pose_forced = force_vertical_y_rotation(
-        get_pelvis_pose(mks_positions, gender)[:3, :3].reshape(3, 3), vertical_direction
-    )
+    # pelvis_pose_forced = force_vertical_y_rotation(
+    #     get_pelvis_pose(mks_positions, gender)[:3, :3].reshape(3, 3), vertical_direction
+    # )
     # trans_global = (pelvis_pose_forced@ trans_local).reshape(3,1)
     trans_global = (
         get_pelvis_pose(mks_positions, gender)[:3, :3].reshape(3, 3) @ trans_local

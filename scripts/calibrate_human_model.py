@@ -11,12 +11,7 @@ import pinocchio as pin
 from pinocchio.visualize import MeshcatVisualizer
 import meshcat
 
-# Add the src folder to sys.path so that viewer modules can be found.
-sys.path.insert(
-    0, os.path.abspath(os.path.join(os.path.dirname(__file__), "../../../src"))
-)
-
-from comfi_examples.urdf_utils import *
+from comfi_examples.urdf_utils import mks_registration, scale_human_model, Robot
 from comfi_examples.utils import read_mks_data, read_subject_yaml
 from comfi_examples.viz_utils import add_markers_to_meshcat, set_markers_frame
 
@@ -276,7 +271,7 @@ def calibrate_human_model(
     model, (collision_model, visual_model) = pin.buildReducedModel(
         human_model, [human_collision_model, human_visual_model], joint_ids_to_lock, q0
     )
-    data = pin.Data(model)
+    # data = pin.Data(model)
 
     # Override materials on the final visual_model
     for go in human_visual_model.geometryObjects:

@@ -495,7 +495,7 @@ class RT_IK:
         try:
             sol = opti.solve()
             q = sol.value(Q)
-        except:
+        except Exception:
             q = opti.debug.value(Q)
 
         # Get the optimized joint angles

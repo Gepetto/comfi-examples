@@ -1,6 +1,5 @@
 import numpy as np
 import os
-import numpy as np
 import onnxruntime as ort
 
 
@@ -102,7 +101,7 @@ def augmentTRC(
         The concatenated responses from the lower and upper body augmenters.
     """
 
-    n_response_markers_all = 0
+    # n_response_markers_all = 0
     featureHeight = True
     featureWeight = True
 
@@ -175,8 +174,8 @@ def augmentTRC(
             )
 
         # Load mean and std for normalization
-        pathMean = os.path.join(augmenterModelDir, f"mean.npy")
-        pathSTD = os.path.join(augmenterModelDir, f"std.npy")
+        pathMean = os.path.join(augmenterModelDir, "mean.npy")
+        pathSTD = os.path.join(augmenterModelDir, "std.npy")
 
         trainFeatures_mean = np.load(pathMean, allow_pickle=True)
         inputs -= trainFeatures_mean

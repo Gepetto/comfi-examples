@@ -4,7 +4,6 @@ import pandas as pd
 import yaml
 import matplotlib.pyplot as plt
 import pinocchio as pin
-import yaml
 
 
 def Rquat(x, y, z, w):

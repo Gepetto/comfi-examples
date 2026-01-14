@@ -3,7 +3,12 @@ import pinocchio as pin
 import numpy as np
 from comfi_examples.linear_algebra_utils import col_vector_3D
 from example_robot_data import load
-from comfi_examples.human_model_utils import *
+from comfi_examples.human_model_utils import (
+    get_local_mks_positions,
+    get_segments_mks_dict,
+    get_local_segments_positions,
+    construct_segments_frames,
+)
 
 
 class Robot(RobotWrapper):

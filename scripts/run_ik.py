@@ -1,7 +1,5 @@
 # This script solves an inverse kinematics problem using QP or IPOPT to estimate joint angles from LSTM-augmented anatomical marker data.
-import os
-import sys
-from comfi_examples.urdf_utils import *
+from comfi_examples.urdf_utils import mks_registration, scale_human_model, Robot
 import numpy as np
 import pinocchio as pin
 from comfi_examples.utils import read_mks_data, read_subject_yaml, Rquat
@@ -41,8 +39,8 @@ mks_to_skip = [
 
 # read mks data
 
-path_to_csv = f"/home/kchalabi/Documents/THESE/dataset/comfi-usage/output/res_hpe/1012/RobotWelding/augmented_markers.csv"
-path_to_kpt = f"/home/kchalabi/Documents/THESE/dataset/comfi-usage/output/res_hpe/1012/RobotWelding/3d_keypoints_4cams.csv"
+path_to_csv = "/home/kchalabi/Documents/THESE/dataset/comfi-usage/output/res_hpe/1012/RobotWelding/augmented_markers.csv"
+path_to_kpt = "/home/kchalabi/Documents/THESE/dataset/comfi-usage/output/res_hpe/1012/RobotWelding/3d_keypoints_4cams.csv"
 keys_to_add = ["Nose", "Head", "Right_Ear", "Left_Ear", "Right_Eye", "Left_Eye"]
 
 data_markers_lstm = pd.read_csv(path_to_csv)
