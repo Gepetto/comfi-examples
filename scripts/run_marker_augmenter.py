@@ -10,7 +10,9 @@ import numpy as np
 import pandas as pd
 
 # Add the src folder to sys.path so that viewer modules can be found.
-sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '../../../src')))
+sys.path.insert(
+    0, os.path.abspath(os.path.join(os.path.dirname(__file__), "../../../src"))
+)
 
 from comfi_examples.augmenter_utils import augmentTRC, loadModel
 from comfi_examples.utils import save_to_csv, read_subject_yaml
@@ -65,18 +67,54 @@ TASKS = [
 ]
 
 MARKERS = [
-    'RASI', 'LASI', 'RPSI', 'LPSI', 'RKNE',
-    'RMKNE', 'RANK', 'RMANK', 'RTOE', 'R5MHD',
-    'RHEE', 'LKNE', 'LMKNE', 'LANK', 'LMANK',
-    'LTOE', 'LHEE', 'L5MHD', 'RSHO', 'LSHO',
-    'C7', 'r_thigh1_study', 'r_thigh2_study', 'r_thigh3_study', 'L_thigh1_study',
-    'L_thigh2_study', 'L_thigh3_study', 'r_sh1_study', 'r_sh2_study', 'r_sh3_study',
-    'L_sh1_study', 'L_sh2_study', 'L_sh3_study', 'RHJC_study', 'LHJC_study', 'RELB',
-    'RMELB', 'RWRI', 'RMWRI', 'LELB', 'LMELB',
-    'LWRI', 'LMWRI'
+    "RASI",
+    "LASI",
+    "RPSI",
+    "LPSI",
+    "RKNE",
+    "RMKNE",
+    "RANK",
+    "RMANK",
+    "RTOE",
+    "R5MHD",
+    "RHEE",
+    "LKNE",
+    "LMKNE",
+    "LANK",
+    "LMANK",
+    "LTOE",
+    "LHEE",
+    "L5MHD",
+    "RSHO",
+    "LSHO",
+    "C7",
+    "r_thigh1_study",
+    "r_thigh2_study",
+    "r_thigh3_study",
+    "L_thigh1_study",
+    "L_thigh2_study",
+    "L_thigh3_study",
+    "r_sh1_study",
+    "r_sh2_study",
+    "r_sh3_study",
+    "L_sh1_study",
+    "L_sh2_study",
+    "L_sh3_study",
+    "RHJC_study",
+    "LHJC_study",
+    "RELB",
+    "RMELB",
+    "RWRI",
+    "RMWRI",
+    "LELB",
+    "LMELB",
+    "LWRI",
+    "LMWRI",
 ]
 
-HEADER = [f"{marker}_{axis}" for marker in MARKERS for axis in ('X[mm]', 'Y[mm]', 'Z[mm]')]
+HEADER = [
+    f"{marker}_{axis}" for marker in MARKERS for axis in ("X[mm]", "Y[mm]", "Z[mm]")
+]
 
 BUFFER_SIZE = 30
 
@@ -146,6 +184,7 @@ def parse_args():
     )
     return p.parse_args()
 
+
 def validate_lists(subject_ids, tasks):
     unknown_ids = sorted(set(subject_ids) - set(SUBJECT_IDS))
     unknown_tasks = sorted(set(tasks) - set(TASKS))
@@ -169,7 +208,7 @@ def process_one(
     cutoff_freq: float,
     filter_order: int,
     sampling_freq: float,
-    warmed_models
+    warmed_models,
 ) -> bool:
     """
     Process a single subject/task combination:
@@ -194,7 +233,7 @@ def process_one(
     _, subject_height, subject_mass, _ = read_subject_yaml(str(metadata_yaml))
 
     # Load 3D keypoints
-    data = pd.read_csv(input_csv).values/1000
+    data = pd.read_csv(input_csv).values / 1000
     num_columns = data.shape[1]
 
     if num_columns % 3 != 0:
@@ -230,7 +269,7 @@ def process_one(
                 subject_height=subject_height,
                 models=warmed_models,
                 augmenterDir=augmenter_path,
-                augmenter_model='v0.3'
+                augmenter_model="v0.3",
             )
             augmented_markers_list.append(augmented_markers)
 
@@ -242,7 +281,7 @@ def process_one(
         data=augmented_array,
         cutoff_frequency=cutoff_freq,
         order=filter_order,
-        sampling_frequency=sampling_freq
+        sampling_frequency=sampling_freq,
     )
 
     # Create output directory if needed
@@ -257,7 +296,7 @@ def process_one(
 def main():
     args = parse_args()
     validate_lists(args.subject_ids, args.tasks)
-    
+
     # Construire le chemin metadata depuis comfi_root
     comfi_root = Path(args.comfi_root).resolve()
     metadata_root = comfi_root / "metadata"
@@ -267,7 +306,7 @@ def main():
     warmed_models = loadModel(
         augmenterDir=args.augmenter_path,
         augmenterModelName="LSTM",
-        augmenter_model='v0.3'
+        augmenter_model="v0.3",
     )
     print("[INFO] Model loaded successfully.")
 
@@ -277,19 +316,21 @@ def main():
         for task in args.tasks:
             total += 1
             try:
-                ok += int(process_one(
-                    subject_id=subject_id,
-                    task=task,
-                    output_root=args.output_root,
-                    metadata_root=metadata_root,  # Utilise le chemin construit
-                    augmenter_path=args.augmenter_path,
-                    input_file=args.input_file,
-                    output_file=args.output_file,
-                    cutoff_freq=args.cutoff_freq,
-                    filter_order=args.filter_order,
-                    sampling_freq=args.sampling_freq,
-                    warmed_models=warmed_models
-                ))
+                ok += int(
+                    process_one(
+                        subject_id=subject_id,
+                        task=task,
+                        output_root=args.output_root,
+                        metadata_root=metadata_root,  # Utilise le chemin construit
+                        augmenter_path=args.augmenter_path,
+                        input_file=args.input_file,
+                        output_file=args.output_file,
+                        cutoff_freq=args.cutoff_freq,
+                        filter_order=args.filter_order,
+                        sampling_freq=args.sampling_freq,
+                        warmed_models=warmed_models,
+                    )
+                )
             except Exception as e:
                 print(f"[ERROR] {subject_id}/{task}: {e}")
 

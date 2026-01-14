@@ -7,23 +7,24 @@ def check_orthogonality(matrix: np.ndarray):
     X = matrix[:3, 0]
     Y = matrix[:3, 1]
     Z = matrix[:3, 2]
-    
+
     # Calcul des produits scalaires
     dot_XY = np.dot(X, Y)
     dot_XZ = np.dot(X, Z)
     dot_YZ = np.dot(Y, Z)
-    
+
     # Tolérance pour les erreurs numériques
     tolerance = 1e-6
-    
+
     print(f"Dot product X.Y: {dot_XY}")
     print(f"Dot product X.Z: {dot_XZ}")
     print(f"Dot product Y.Z: {dot_YZ}")
-    
+
     assert np.abs(dot_XY) < tolerance, "Vectors X and Y are not orthogonal"
     assert np.abs(dot_XZ) < tolerance, "Vectors X and Z are not orthogonal"
     assert np.abs(dot_YZ) < tolerance, "Vectors Y and Z are not orthogonal"
-    
+
+
 def orthogonalize_matrix(matrix: np.ndarray) -> np.ndarray:
     """
     Function that takes as input a matrix and orthogonalizes it

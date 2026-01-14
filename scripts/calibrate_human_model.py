@@ -12,7 +12,9 @@ from pinocchio.visualize import MeshcatVisualizer
 import meshcat
 
 # Add the src folder to sys.path so that viewer modules can be found.
-sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '../../../src')))
+sys.path.insert(
+    0, os.path.abspath(os.path.join(os.path.dirname(__file__), "../../../src"))
+)
 
 from comfi_examples.urdf_utils import *
 from comfi_examples.utils import read_mks_data, read_subject_yaml
@@ -67,12 +69,17 @@ TASKS = [
 ]
 
 # Keys to add from keypoints to markers
-KEYS_TO_ADD = ['Nose', 'Head', 'Right_Ear', 'Left_Ear', 'Right_Eye', 'Left_Eye']
+KEYS_TO_ADD = ["Nose", "Head", "Right_Ear", "Left_Ear", "Right_Eye", "Left_Eye"]
 
 # Joints to lock during visualization
 JOINTS_TO_LOCK = [
-    "middle_thoracic_X", "middle_thoracic_Y", "middle_thoracic_Z",
-    "left_wrist_X", "left_wrist_Z", "right_wrist_X", "right_wrist_Z"
+    "middle_thoracic_X",
+    "middle_thoracic_Y",
+    "middle_thoracic_Z",
+    "left_wrist_X",
+    "left_wrist_Z",
+    "right_wrist_X",
+    "right_wrist_Z",
 ]
 
 
@@ -197,22 +204,30 @@ def calibrate_human_model(
 
     # Load subject metadata
     _, subject_height, subject_mass, gender = read_subject_yaml(str(metadata_yaml))
-    print(f"[INFO] Subject {subject_id}: height={subject_height}m, mass={subject_mass}kg, gender={gender}")
+    print(
+        f"[INFO] Subject {subject_id}: height={subject_height}m, mass={subject_mass}kg, gender={gender}"
+    )
 
     # Load augmented markers and keypoints
     data_markers_lstm = pd.read_csv(path_to_csv)
     keypoints = pd.read_csv(path_to_kpt) / 1000  # Convert mm to m
 
     # Add specific keypoints to markers
-    columns_to_add = [col for col in keypoints.columns if any(key + '_' in col for key in KEYS_TO_ADD)]
+    columns_to_add = [
+        col for col in keypoints.columns if any(key + "_" in col for key in KEYS_TO_ADD)
+    ]
 
     if len(data_markers_lstm) != len(keypoints):
         raise ValueError("Row count mismatch between augmented markers and keypoints")
 
-    mks_data = pd.concat([data_markers_lstm, keypoints[columns_to_add].reset_index(drop=True)], axis=1)
+    mks_data = pd.concat(
+        [data_markers_lstm, keypoints[columns_to_add].reset_index(drop=True)], axis=1
+    )
 
     # Read marker data
-    result_markers, start_sample_dict = read_mks_data(mks_data, start_sample=start_sample, converter=1.0)
+    result_markers, start_sample_dict = read_mks_data(
+        mks_data, start_sample=start_sample, converter=1.0
+    )
     mks_names = list(start_sample_dict.keys())
     print(f"[INFO] Loaded {len(mks_names)} markers")
 
@@ -226,14 +241,24 @@ def calibrate_human_model(
 
     # Scale the model to data
     print(f"[INFO] Scaling human model (with_hand={with_hand})")
-    human_model = scale_human_model(human_model, start_sample_dict, with_hand=with_hand, 
-                                    gender=gender, subject_height=subject_height)
+    human_model = scale_human_model(
+        human_model,
+        start_sample_dict,
+        with_hand=with_hand,
+        gender=gender,
+        subject_height=subject_height,
+    )
     print(f"[INFO] Model DOF: {human_model.nq}")
 
     # Register markers
     print("[INFO] Registering markers to model")
-    human_model = mks_registration(human_model, start_sample_dict, with_hand=False, 
-                                   gender=gender, subject_height=subject_height)
+    human_model = mks_registration(
+        human_model,
+        start_sample_dict,
+        with_hand=False,
+        gender=gender,
+        subject_height=subject_height,
+    )
 
     human_data = pin.Data(human_model)
     human_collision_model = human.collision_model
@@ -242,8 +267,11 @@ def calibrate_human_model(
     # VISUALIZATION
     # Lock some joints
     q0 = pin.neutral(human_model)
-    joint_ids_to_lock = [human_model.getJointId(jn) for jn in JOINTS_TO_LOCK 
-                         if human_model.existJointName(jn)]
+    joint_ids_to_lock = [
+        human_model.getJointId(jn)
+        for jn in JOINTS_TO_LOCK
+        if human_model.existJointName(jn)
+    ]
 
     model, (collision_model, visual_model) = pin.buildReducedModel(
         human_model, [human_collision_model, human_visual_model], joint_ids_to_lock, q0
@@ -270,7 +298,7 @@ def calibrate_human_model(
         marker_names=mks_names,
         radius=marker_radius,
         default_color=0xFF0000,  # Red
-        opacity=0.9
+        opacity=0.9,
     )
 
     q = pin.neutral(human_model)
@@ -291,11 +319,7 @@ def calibrate_human_model(
 
     # Set marker positions in visualization
     set_markers_frame(
-        viz.viewer,
-        model_markers_list,
-        t=0,
-        marker_names=mks_names,
-        unit_scale=1.0
+        viz.viewer, model_markers_list, t=0, marker_names=mks_names, unit_scale=1.0
     )
 
     ###display markers without registration (same names so can't display both in same time)
@@ -311,7 +335,6 @@ def calibrate_human_model(
     #             viz.viewer, result_markers, 0, marker_names=mks_names, unit_scale=1.0
     #         )
 
-
     print(f"[SUCCESS] {subject_id}/{task} calibration complete and visualized")
     return True
 
@@ -319,7 +342,7 @@ def calibrate_human_model(
 def main():
     args = parse_args()
     validate_inputs(args.subject_id, args.task)
-    
+
     comfi_root = Path(args.comfi_root).resolve()
     output_root = Path(args.output_root).resolve()
     model_dir = Path(args.model_dir).resolve()
@@ -349,6 +372,3 @@ def main():
 
 if __name__ == "__main__":
     sys.exit(main())
-
-
-
