@@ -38,12 +38,12 @@ Data from Zenodo (https://zenodo.org/records/17223909) should be downloaded and 
 A script is provided for this:
 
 ```bash
-./scripts/download.py --delete-zip
+python scripts/download.py --delete-zip
 ```
 
 You can also exclude some .zip files if they are already downloaded for instance using:
 ```bash
-./scripts/download.py --delete-zip --exclude mocap cam_params
+python scripts/download.py --delete-zip --exclude mocap cam_params
 ```
 
 1. **Human pose estimation (HPE)**
@@ -51,8 +51,8 @@ You can also exclude some .zip files if they are already downloaded for instance
 Run the RTMlib pose estimator (YOLOX + RTMPose-M with 26 keypoints), which can display the results in real time (this option can be disabled). At the end of the run, an output video with the skeleton overlay and a CSV file containing both the average score and the keypoints are saved in the output folder.
 
 ```bash
-./scripts/human_pose_estimator/run_pose_estimator.py \
-    --id 1012 \
+python scripts/human_pose_estimator/run_pose_estimator.py \
+    --id 1118 \
     --task RobotWelding
 ```
 
@@ -60,8 +60,8 @@ Run the RTMlib pose estimator (YOLOX + RTMPose-M with 26 keypoints), which can d
 
 Triangulate keypoints from multiple camera views (can be done with any set of cameras, minimum 2). The triangulation results are saved in the output folder.
 ```bash
-./scripts/run_triangulation.py \
-    --id 1012 \
+python scripts/run_triangulation.py \
+    --id 1118 \
     --task RobotWelding \
     --cams 0 2
 ```
@@ -70,8 +70,8 @@ Triangulate keypoints from multiple camera views (can be done with any set of ca
 
 2.1 **Visualize triangulated data:**
 ```bash
-./scripts/visualization/viz_jcp.py \
-    --id 1012 \
+python scripts/visualization/viz_jcp.py \
+    --id 1118 \
     --task RobotWelding \
     --mode hpe \
     --nb-cams 4 \
@@ -81,8 +81,8 @@ Triangulate keypoints from multiple camera views (can be done with any set of ca
 ```
 3. **Visualize mocap data (markers and joint center positions"JCP") at either 40 Hz or 100 Hz.**
 ```bash
-./scripts/visualization/viz_mks.py \
-    --id 1012 \
+python scripts/visualization/viz_mks.py \
+    --id 1118 \
     --task RobotWelding \
     --freq 40 \
     --mkset est \
@@ -96,8 +96,8 @@ Visualize multimodal data and animate motion capture sequences, including refere
 
 **Note:** Robot and force data are not available for all tasks. Additionally, robot data is only aligned with videos at 40 Hz.
 ```bash
-./scripts/visualization/viz_all_data.py \
-     --id 1012 \
+python scripts/visualization/viz_all_data.py \
+     --id 1118 \
      --task RobotWelding \
      --freq 40 \
      --start 100 \
@@ -109,8 +109,8 @@ Visualize multimodal data and animate motion capture sequences, including refere
 
 The extracted JCP are saved in the output folder.
 ```bash
-./scripts/get_jcp_from_mocap_markers.py \
-    --id 1012 \
+python scripts/get_jcp_from_mocap_markers.py \
+    --id 1118 \
     --task RobotWelding \
     --freq 40 \
     --mkset est
@@ -118,10 +118,48 @@ The extracted JCP are saved in the output folder.
 ```
 6. **Procruste alignment using the Kabsch algorithm**
 
-Performs a Procrustes alignment between JCP Mocap and JCP HPE. The newly aligned JCP are saved in the output folder.
+Performs a Procrustes alignment between JCP Mocap and JCP HPE. The newly aligned JCP are saved in the output folder. MPJPE will be calculated, and all JCPs will be plotted for comparison.
 ```bash
-./scripts/run_procruste_alignement.py \
-    --id 1012 \
+python scripts/run_procruste_alignement.py \
+    --id 1118 \
     --task RobotWelding \
     --nb-cams 4
+```
+7. **OpenCap LSTM-based augmentation of triangulated keypoints to 43 anatomical markers**
+
+The new anatomical markers are saved in the output folder.
+```bash
+python scripts/run_marker_augmenter.py \
+    --id 1118 \
+    --task RobotWelding
+```
+8. **Human model calibration using OpenCap augmented markers**
+
+This script allows the calibration of the human model using OpenCap augmented markers and a URDF for the human model, and displays it in MeshCat.
+```bash
+python scripts/calibrate_human_model.py \
+    --id 1118 \
+    --task RobotWelding
+```
+
+9. **Computation of joint angles using inverse kinematics (QP or IPOPT).**
+
+Joint angles and marker model trajectories are saved in the output folder
+```bash
+python scripts/run_ik.py \
+       --id 1118 \
+       --task RobotWelding \
+       --display \
+       --ik-solver ipopt
+```
+
+9. **Comparison of joint angles estimated from Mocap (Vicon as reference) and from markerless 4-camera HPE with LSTM-based augmentation**
+
+Performs temporal synchronization, computes RMSE/MAE/correlation metrics, and generates comparison plots. Used to validate markerless motion capture accuracy against gold-standard mocap systems.
+```bash
+python scripts/run_comparaison.py \
+ --id 1118 \
+ --task RobotWelding \
+ --show-plots
+
 ```

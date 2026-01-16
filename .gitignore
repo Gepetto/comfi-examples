@@ -3,6 +3,7 @@ ENV/
 env/
 comfi_env/
 .venv/
+.direnv
 
 __pycache__/
 *.py[cod]

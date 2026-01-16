@@ -5,7 +5,7 @@ import pandas as pd
 import os
 
 from comfi_examples.utils import read_mks_data
-from comfi_examples.urdf_utils import compute_joint_centers_from_mks
+from comfi_examples.human_model_utils import compute_joint_centers_from_mks
 
 SUBJECT_IDS = [
     "1012",
