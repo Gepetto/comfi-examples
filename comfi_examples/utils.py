@@ -4,6 +4,37 @@ import pandas as pd
 import yaml
 import matplotlib.pyplot as plt
 import pinocchio as pin
+import csv
+
+def read_specific_joint(file_path, dofs_list,start_sample):
+
+    q = []
+    with open(file_path, mode='r') as csv_file:
+        csv_reader = csv.reader(csv_file)
+        #Skip the header 
+        header = next(csv_reader)
+        
+        # Read all rows into memory to count total rows
+        all_rows = list(csv_reader)
+        total_rows = len(all_rows)
+        # print(total_rows)
+        
+        #  determine indices of columns
+        missing_cols = [name for name in dofs_list if name not in header]
+        if missing_cols:
+            raise ValueError(f"Colonnes manquantes : {missing_cols}")
+        
+        indices = [header.index(name) for name in dofs_list]
+        # print("Indices des colonnes :", indices)
+        
+        
+        # Start reading from the start_sampleth row and stop before the last end_sample rows
+        for row in all_rows[start_sample:total_rows]:
+            # Extract values for the specified columns
+            selected_values = [float(row[i]) for i in indices]
+            q.append(selected_values)
+    
+    return np.array(q)
 
 
 def Rquat(x, y, z, w):

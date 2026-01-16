@@ -22,6 +22,7 @@ dependencies = [
     "pandas>=2.3.3",
     "pin>=3.7.0",
     "pyyaml>=6.0.3",
+    "quadprog>=0.1.13",
     "rtmlib>=0.0.13",
     "scipy>=1.15.3",
     "tqdm>=4.67.1",
