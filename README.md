@@ -131,7 +131,7 @@ The new anatomical markers are saved in the output folder.
 ```bash
 python scripts/run_marker_augmenter.py \
     --id 1118 \
-    --task RobotWelding 
+    --task RobotWelding
 ```
 8. **Human model calibration using OpenCap augmented markers**
 
@@ -139,12 +139,12 @@ This script allows the calibration of the human model using OpenCap augmented ma
 ```bash
 python scripts/calibrate_human_model.py \
     --id 1118 \
-    --task RobotWelding 
+    --task RobotWelding
 ```
 
 9. **Computation of joint angles using inverse kinematics (QP or IPOPT).**
 
-Joint angles and marker model trajectories are saved in the output folder 
+Joint angles and marker model trajectories are saved in the output folder
 ```bash
 python scripts/run_ik.py \
        --id 1118 \

@@ -66,7 +66,7 @@ TASKS = [
 # Keys to add from keypoints to markers
 KEYS_TO_ADD = ["Nose", "Head", "Right_Ear", "Left_Ear", "Right_Eye", "Left_Eye"]
 
-# Joints to lock 
+# Joints to lock
 JOINTS_TO_LOCK = [
     "middle_thoracic_X",
     "middle_thoracic_Y",
@@ -296,8 +296,8 @@ def calibrate_human_model(
         opacity=0.9,
     )
     quat = pin.Quaternion(pin.rpy.rpyToMatrix(np.deg2rad(90), 0, 0)).coeffs()
-    q=np.zeros(human_model.nq)
-    q[3:7]=quat
+    q = np.zeros(human_model.nq)
+    q[3:7] = quat
     pin.forwardKinematics(human_model, human_data, q)
     pin.updateFramePlacements(human_model, human_data)
 

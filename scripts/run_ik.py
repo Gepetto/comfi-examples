@@ -16,27 +16,81 @@ from comfi_examples.utils import read_mks_data, read_subject_yaml
 from comfi_examples.ik_utils import RT_IK
 
 SUBJECT_IDS = [
-    "1012", "1118", "1508", "1602", "1847", "2112", "2198", "2307",
-    "3361", "4162", "4216", "4279", "4509", "4612", "4665", "4687",
-    "4801", "4827",
+    "1012",
+    "1118",
+    "1508",
+    "1602",
+    "1847",
+    "2112",
+    "2198",
+    "2307",
+    "3361",
+    "4162",
+    "4216",
+    "4279",
+    "4509",
+    "4612",
+    "4665",
+    "4687",
+    "4801",
+    "4827",
 ]
 
 TASKS = [
-    "Screwing", "ScrewingSat", "Crouching", "Picking", "Hammering",
-    "HammeringSat", "Jumping", "Lifting", "QuickLifting", "Lower",
-    "SideOverhead", "FrontOverhead", "RobotPolishing", "RobotWelding",
-    "Polishing", "PolishingSat", "SitToStand", "Squatting", "Static",
-    "Upper", "CircularWalking", "StraightWalking", "Welding", "WeldingSat",
+    "Screwing",
+    "ScrewingSat",
+    "Crouching",
+    "Picking",
+    "Hammering",
+    "HammeringSat",
+    "Jumping",
+    "Lifting",
+    "QuickLifting",
+    "Lower",
+    "SideOverhead",
+    "FrontOverhead",
+    "RobotPolishing",
+    "RobotWelding",
+    "Polishing",
+    "PolishingSat",
+    "SitToStand",
+    "Squatting",
+    "Static",
+    "Upper",
+    "CircularWalking",
+    "StraightWalking",
+    "Welding",
+    "WeldingSat",
 ]
 
 # Markers to skip during tracking/RMSE computation
 MKS_TO_SKIP = [
-    "LForearm", "LUArm", "RUArm", "RHJC_study", "LHJC_study",
-    "r_pelvis", "l_pelvis", "LHand", "LHL2", "LHM5",
-    "RForearm", "RHand", "RHL2", "RHM5",
-    "L_sh1_study", "L_thigh1_study", "r_sh1_study", "r_thigh1_study",
-    "r_thigh2_study", "L_sh2_study", "L_thigh2_study", "r_sh2_study",
-    "L_sh3_study", "L_thigh3_study", "r_sh3_study", "r_thigh3_study",
+    "LForearm",
+    "LUArm",
+    "RUArm",
+    "RHJC_study",
+    "LHJC_study",
+    "r_pelvis",
+    "l_pelvis",
+    "LHand",
+    "LHL2",
+    "LHM5",
+    "RForearm",
+    "RHand",
+    "RHL2",
+    "RHM5",
+    "L_sh1_study",
+    "L_thigh1_study",
+    "r_sh1_study",
+    "r_thigh1_study",
+    "r_thigh2_study",
+    "L_sh2_study",
+    "L_thigh2_study",
+    "r_sh2_study",
+    "L_sh3_study",
+    "L_thigh3_study",
+    "r_sh3_study",
+    "r_thigh3_study",
 ]
 
 # Keys from keypoints to add to markers to get head pose
@@ -44,32 +98,94 @@ KEYS_TO_ADD = ["Nose", "Head", "Right_Ear", "Left_Ear", "Right_Eye", "Left_Eye"]
 
 # Markers to track in IK
 KEYS_TO_TRACK = [
-    "Nose", "Head", "Right_Ear", "Left_Ear", "Right_Eye", "Left_Eye",
-    "C7", "RASI", "LASI", "RPSI", "LPSI",
-    "RSHO", "RELB", "RMELB", "RWRI", "RMWRI",
-    "RANK", "RMANK", "RTOE", "R5MHD", "RHEE", "RKNE", "RMKNE",
-    "LSHO", "LELB", "LMELB", "LWRI", "LMWRI",
-    "LANK", "LMANK", "LTOE", "L5MHD", "LHEE", "LKNE", "LMKNE",
+    "Nose",
+    "Head",
+    "Right_Ear",
+    "Left_Ear",
+    "Right_Eye",
+    "Left_Eye",
+    "C7",
+    "RASI",
+    "LASI",
+    "RPSI",
+    "LPSI",
+    "RSHO",
+    "RELB",
+    "RMELB",
+    "RWRI",
+    "RMWRI",
+    "RANK",
+    "RMANK",
+    "RTOE",
+    "R5MHD",
+    "RHEE",
+    "RKNE",
+    "RMKNE",
+    "LSHO",
+    "LELB",
+    "LMELB",
+    "LWRI",
+    "LMWRI",
+    "LANK",
+    "LMANK",
+    "LTOE",
+    "L5MHD",
+    "LHEE",
+    "LKNE",
+    "LMKNE",
 ]
 
 # Joints to lock during IK
 JOINTS_TO_LOCK = [
-    "middle_thoracic_X", "middle_thoracic_Y", "middle_thoracic_Z",
-    "left_wrist_X", "left_wrist_Z", "right_wrist_X", "right_wrist_Z",
+    "middle_thoracic_X",
+    "middle_thoracic_Y",
+    "middle_thoracic_Z",
+    "left_wrist_X",
+    "left_wrist_Z",
+    "right_wrist_X",
+    "right_wrist_Z",
 ]
 
 # Joint angle names for output CSV
 JOINT_ANGLES_NAMES = [
-    "Freeflyer_X[m]","Freeflyer_Y[m]","Freeflyer_Z[m]","Freeflyer_quaternion_X","Freeflyer_quaternion_Y","Freeflyer_quaternion_Z","Freeflyer_quaternion_W",
-    "Left_Hip_Flexion_Extension[rad]","Left_Hip_Abduction_Adduction[rad]","Left_Hip_Internal_External_Rotation[rad]",
-    "Left_Knee_Flexion_Extension[rad]","Left_Ankle_Plantarflexion_Dorsiflexion[rad]","Left_Ankle_Inversion_Eversion[rad]",
-    "Lumbar_Flexion_Extension[rad]","Lumbar_Lateral_Bending[rad]","Left_Clavicle_Elevation_Depression[rad]",
-    "Left_Shoulder_Flexion_Extension[rad]","Left_Shoulder_Abduction_Adduction[rad]","Left_Shoulder_Internal_External_Rotation[rad]",
-    "Left_Elbow_Flexion_Extension[rad]","Left_Elbow_Pronation_Supination[rad]","Cervical_Flexion_Extension[rad]","Cervical_Lateral_Bending[rad]","Cervical_Internal_External_Rotation[rad]",
-    "Right_Clavicle_Elevation_Depression[rad]","Right_Shoulder_Flexion_Extension[rad]","Right_Shoulder_Abduction_Adduction[rad]","Right_Shoulder_Internal_External_Rotation[rad]",
-    "Right_Elbow_Flexion_Extension[rad]","Right_Elbow_Pronation_Supination[rad]","Right_Hip_Flexion_Extension[rad]","Right_Hip_Abduction_Adduction[rad]","Right_Hip_Internal_External_Rotation[rad]",
-    "Right_Knee_Flexion_Extension[rad]","Right_Ankle_Plantarflexion_Dorsiflexion[rad]","Right_Ankle_Inversion_Eversion[rad]",
+    "Freeflyer_X[m]",
+    "Freeflyer_Y[m]",
+    "Freeflyer_Z[m]",
+    "Freeflyer_quaternion_X",
+    "Freeflyer_quaternion_Y",
+    "Freeflyer_quaternion_Z",
+    "Freeflyer_quaternion_W",
+    "Left_Hip_Flexion_Extension[rad]",
+    "Left_Hip_Abduction_Adduction[rad]",
+    "Left_Hip_Internal_External_Rotation[rad]",
+    "Left_Knee_Flexion_Extension[rad]",
+    "Left_Ankle_Plantarflexion_Dorsiflexion[rad]",
+    "Left_Ankle_Inversion_Eversion[rad]",
+    "Lumbar_Flexion_Extension[rad]",
+    "Lumbar_Lateral_Bending[rad]",
+    "Left_Clavicle_Elevation_Depression[rad]",
+    "Left_Shoulder_Flexion_Extension[rad]",
+    "Left_Shoulder_Abduction_Adduction[rad]",
+    "Left_Shoulder_Internal_External_Rotation[rad]",
+    "Left_Elbow_Flexion_Extension[rad]",
+    "Left_Elbow_Pronation_Supination[rad]",
+    "Cervical_Flexion_Extension[rad]",
+    "Cervical_Lateral_Bending[rad]",
+    "Cervical_Internal_External_Rotation[rad]",
+    "Right_Clavicle_Elevation_Depression[rad]",
+    "Right_Shoulder_Flexion_Extension[rad]",
+    "Right_Shoulder_Abduction_Adduction[rad]",
+    "Right_Shoulder_Internal_External_Rotation[rad]",
+    "Right_Elbow_Flexion_Extension[rad]",
+    "Right_Elbow_Pronation_Supination[rad]",
+    "Right_Hip_Flexion_Extension[rad]",
+    "Right_Hip_Abduction_Adduction[rad]",
+    "Right_Hip_Internal_External_Rotation[rad]",
+    "Right_Knee_Flexion_Extension[rad]",
+    "Right_Ankle_Plantarflexion_Dorsiflexion[rad]",
+    "Right_Ankle_Inversion_Eversion[rad]",
 ]
+
 
 def parse_args():
     p = argparse.ArgumentParser(
@@ -218,7 +334,9 @@ def process_ik(
 
     # Load subject metadata
     _, subject_height, subject_mass, gender = read_subject_yaml(str(metadata_yaml))
-    print(f"[INFO] Subject {subject_id}: height={subject_height}m, mass={subject_mass}kg, gender={gender}")
+    print(
+        f"[INFO] Subject {subject_id}: height={subject_height}m, mass={subject_mass}kg, gender={gender}"
+    )
 
     # Load augmented markers and keypoints
     print("[INFO] Loading marker data...")
@@ -226,11 +344,17 @@ def process_ik(
     keypoints = pd.read_csv(path_to_kpt) / 1000  # Convert mm to m
 
     # Add specific keypoints to markers
-    columns_to_add = [col for col in keypoints.columns if any(key + '_' in col for key in KEYS_TO_ADD)]
-    mks_data = pd.concat([data_markers_lstm, keypoints[columns_to_add].reset_index(drop=True)], axis=1)
+    columns_to_add = [
+        col for col in keypoints.columns if any(key + "_" in col for key in KEYS_TO_ADD)
+    ]
+    mks_data = pd.concat(
+        [data_markers_lstm, keypoints[columns_to_add].reset_index(drop=True)], axis=1
+    )
 
     # Read marker data
-    result_markers, start_sample_dict = read_mks_data(mks_data, start_sample=start_sample)
+    result_markers, start_sample_dict = read_mks_data(
+        mks_data, start_sample=start_sample
+    )
     print(f"[INFO] Loaded {len(result_markers)} frames")
 
     # Load URDF
@@ -244,8 +368,11 @@ def process_ik(
     # Scale the model to data
     print(f"[INFO] Scaling human model (with_hand={with_hand})")
     human_model = scale_human_model(
-        human_model, start_sample_dict, with_hand=with_hand,
-        gender=gender, subject_height=subject_height
+        human_model,
+        start_sample_dict,
+        with_hand=with_hand,
+        gender=gender,
+        subject_height=subject_height,
     )
     print(f"[INFO] Model DOF (before locking): {human_model.nq}")
 
@@ -275,7 +402,7 @@ def process_ik(
     viewer = None
     if display:
         print(f"[INFO] Initializing Meshcat visualizer at {meshcat_url}")
-        
+
         # Override materials for the visual model
         for go in human_visual_model.geometryObjects:
             go.overrideMaterial = True
@@ -292,14 +419,14 @@ def process_ik(
         for marker_name in KEYS_TO_TRACK:
             viewer[f"gt_markers/{marker_name}"].set_object(
                 meshcat.geometry.Sphere(0.02),
-                meshcat.geometry.MeshLambertMaterial(color=0xFF0000, opacity=0.9)
+                meshcat.geometry.MeshLambertMaterial(color=0xFF0000, opacity=0.9),
             )
 
         # Add model markers (GREEN)
         for marker_name in KEYS_TO_TRACK:
             viewer[f"model_markers/{marker_name}"].set_object(
                 meshcat.geometry.Sphere(0.015),  # Slightly smaller
-                meshcat.geometry.MeshLambertMaterial(color=0x00FF00, opacity=0.8)
+                meshcat.geometry.MeshLambertMaterial(color=0x00FF00, opacity=0.8),
             )
 
         print("[INFO] Visualization setup complete")
@@ -309,12 +436,12 @@ def process_ik(
     # Initialize IK solver
     print(f"[INFO] Initializing IK solver (method: {ik_solver.upper()})...")
     q = pin.neutral(human_model)
-    
+
     # Set marker weights (all equal for now)
     omega = {key: 1.0 for key in KEYS_TO_TRACK}
-    
+
     ik_class = RT_IK(human_model, start_sample_dict, q, KEYS_TO_TRACK, dt, omega)
-    
+
     # Warm start with IPOPT (always done regardless of solver choice)
     print("[INFO] Warm starting with CASADI/IPOPT...")
     q = ik_class.solve_ik_sample_casadi()
@@ -339,7 +466,7 @@ def process_ik(
     for ii in range(start_sample, len(result_markers)):
         mks_dict = result_markers[ii]
         ik_class._dict_m = mks_dict
-        
+
         # Solve IK using selected method
         q = solve_method()
 
@@ -348,12 +475,12 @@ def process_ik(
         pin.updateFramePlacements(human_model, human_data)
 
         M_model_frame = {}
-        
+
         # Process each marker
         for marker in result_markers[ii].keys():
             if marker in MKS_TO_SKIP:
                 continue
-            
+
             # Ground truth position
             pos_gt = np.array(result_markers[ii][marker])
 
@@ -370,7 +497,7 @@ def process_ik(
             if display and viewer and marker in KEYS_TO_TRACK:
                 transform_gt = meshcat.transformations.translation_matrix(pos_gt)
                 viewer[f"gt_markers/{marker}"].set_transform(transform_gt)
-                
+
                 transform_model = meshcat.transformations.translation_matrix(pos_model)
                 viewer[f"model_markers/{marker}"].set_transform(transform_model)
 
@@ -412,9 +539,9 @@ def process_ik(
     df_angles.to_csv(output_angles_csv, index=False)
 
     # Compute and display RMSE
-    print("\n" + "="*60)
+    print("\n" + "=" * 60)
     print("TRACKING ERROR - Per-marker RMSE (meters):")
-    print("="*60)
+    print("=" * 60)
     rmse_global = 0
     nb_mks = 0
     for marker, sq_errors in sorted(rmse_per_marker.items()):
@@ -424,9 +551,9 @@ def process_ik(
         rmse_global += rmse
 
     rmse_global = rmse_global / nb_mks
-    print("="*60)
+    print("=" * 60)
     print(f"GLOBAL RMSE (all markers): {rmse_global:.4f} m")
-    print("="*60 + "\n")
+    print("=" * 60 + "\n")
 
     print(f"[SUCCESS] {subject_id}/{task} IK processing complete")
     return True
@@ -435,7 +562,7 @@ def process_ik(
 def main():
     args = parse_args()
     validate_inputs(args.subject_id, args.task)
-    
+
     comfi_root = Path(args.comfi_root).resolve()
     output_root = Path(args.output_root).resolve()
     model_dir = Path(args.model_dir).resolve()
@@ -463,6 +590,7 @@ def main():
     except Exception as e:
         print(f"[ERROR] IK processing failed: {e}")
         import traceback
+
         traceback.print_exc()
         return 1
 

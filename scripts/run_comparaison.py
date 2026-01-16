@@ -12,40 +12,101 @@ from scipy.signal import correlation_lags, correlate
 from comfi_examples.utils import read_specific_joint
 
 SUBJECT_IDS = [
-    "1012", "1118", "1508", "1602", "1847", "2112", "2198", "2307",
-    "3361", "4162", "4216", "4279", "4509", "4612", "4665", "4687",
-    "4801", "4827",
+    "1012",
+    "1118",
+    "1508",
+    "1602",
+    "1847",
+    "2112",
+    "2198",
+    "2307",
+    "3361",
+    "4162",
+    "4216",
+    "4279",
+    "4509",
+    "4612",
+    "4665",
+    "4687",
+    "4801",
+    "4827",
 ]
 
 TASKS = [
-    "Screwing", "ScrewingSat", "Crouching", "Picking", "Hammering",
-    "HammeringSat", "Jumping", "Lifting", "QuickLifting", "Lower",
-    "SideOverhead", "FrontOverhead", "RobotPolishing", "RobotWelding",
-    "Polishing", "PolishingSat", "SitToStand", "Squatting", "Static",
-    "Upper", "CircularWalking", "StraightWalking", "Welding", "WeldingSat",
+    "Screwing",
+    "ScrewingSat",
+    "Crouching",
+    "Picking",
+    "Hammering",
+    "HammeringSat",
+    "Jumping",
+    "Lifting",
+    "QuickLifting",
+    "Lower",
+    "SideOverhead",
+    "FrontOverhead",
+    "RobotPolishing",
+    "RobotWelding",
+    "Polishing",
+    "PolishingSat",
+    "SitToStand",
+    "Squatting",
+    "Static",
+    "Upper",
+    "CircularWalking",
+    "StraightWalking",
+    "Welding",
+    "WeldingSat",
 ]
 
 # DOF names for comparison
 DOFS = [
-    "Freeflyer_X[m]", "Freeflyer_Y[m]", "Freeflyer_Z[m]",
-    "Freeflyer_quaternion_X", "Freeflyer_quaternion_Y", "Freeflyer_quaternion_Z", "Freeflyer_quaternion_W",
-    "Left_Hip_Flexion_Extension[rad]", "Left_Hip_Abduction_Adduction[rad]", "Left_Hip_Internal_External_Rotation[rad]",
-    "Left_Knee_Flexion_Extension[rad]", "Left_Ankle_Plantarflexion_Dorsiflexion[rad]", "Left_Ankle_Inversion_Eversion[rad]",
-    "Lumbar_Flexion_Extension[rad]", "Lumbar_Lateral_Bending[rad]", "Left_Clavicle_Elevation_Depression[rad]",
-    "Left_Shoulder_Flexion_Extension[rad]", "Left_Shoulder_Abduction_Adduction[rad]", "Left_Shoulder_Internal_External_Rotation[rad]",
-    "Left_Elbow_Flexion_Extension[rad]", "Left_Elbow_Pronation_Supination[rad]",
-    "Cervical_Flexion_Extension[rad]", "Cervical_Lateral_Bending[rad]", "Cervical_Internal_External_Rotation[rad]",
+    "Freeflyer_X[m]",
+    "Freeflyer_Y[m]",
+    "Freeflyer_Z[m]",
+    "Freeflyer_quaternion_X",
+    "Freeflyer_quaternion_Y",
+    "Freeflyer_quaternion_Z",
+    "Freeflyer_quaternion_W",
+    "Left_Hip_Flexion_Extension[rad]",
+    "Left_Hip_Abduction_Adduction[rad]",
+    "Left_Hip_Internal_External_Rotation[rad]",
+    "Left_Knee_Flexion_Extension[rad]",
+    "Left_Ankle_Plantarflexion_Dorsiflexion[rad]",
+    "Left_Ankle_Inversion_Eversion[rad]",
+    "Lumbar_Flexion_Extension[rad]",
+    "Lumbar_Lateral_Bending[rad]",
+    "Left_Clavicle_Elevation_Depression[rad]",
+    "Left_Shoulder_Flexion_Extension[rad]",
+    "Left_Shoulder_Abduction_Adduction[rad]",
+    "Left_Shoulder_Internal_External_Rotation[rad]",
+    "Left_Elbow_Flexion_Extension[rad]",
+    "Left_Elbow_Pronation_Supination[rad]",
+    "Cervical_Flexion_Extension[rad]",
+    "Cervical_Lateral_Bending[rad]",
+    "Cervical_Internal_External_Rotation[rad]",
     "Right_Clavicle_Elevation_Depression[rad]",
-    "Right_Shoulder_Flexion_Extension[rad]", "Right_Shoulder_Abduction_Adduction[rad]", "Right_Shoulder_Internal_External_Rotation[rad]",
-    "Right_Elbow_Flexion_Extension[rad]", "Right_Elbow_Pronation_Supination[rad]",
-    "Right_Hip_Flexion_Extension[rad]", "Right_Hip_Abduction_Adduction[rad]", "Right_Hip_Internal_External_Rotation[rad]",
-    "Right_Knee_Flexion_Extension[rad]", "Right_Ankle_Plantarflexion_Dorsiflexion[rad]", "Right_Ankle_Inversion_Eversion[rad]",
+    "Right_Shoulder_Flexion_Extension[rad]",
+    "Right_Shoulder_Abduction_Adduction[rad]",
+    "Right_Shoulder_Internal_External_Rotation[rad]",
+    "Right_Elbow_Flexion_Extension[rad]",
+    "Right_Elbow_Pronation_Supination[rad]",
+    "Right_Hip_Flexion_Extension[rad]",
+    "Right_Hip_Abduction_Adduction[rad]",
+    "Right_Hip_Internal_External_Rotation[rad]",
+    "Right_Knee_Flexion_Extension[rad]",
+    "Right_Ankle_Plantarflexion_Dorsiflexion[rad]",
+    "Right_Ankle_Inversion_Eversion[rad]",
 ]
 
 # Joints to exclude from comparison (e.g., locked joints)
 EXCLUDED_JOINTS = [
-    'Lwrist_flex_ext', 'Lwrist_x', 'Rwrist_flex_ext', 'Rwrist_x',
-    'Lelbow_pron_supi', 'Relbow_pron_supi'
+    "Lwrist_flex_ext",
+    "Lwrist_x",
+    "Rwrist_flex_ext",
+    "Rwrist_x",
+    "Lelbow_pron_supi",
+    "Relbow_pron_supi",
 ]
 
 
@@ -142,11 +203,11 @@ def validate_inputs(subject_id, task):
 def synchronize_signals(sig1, sig2):
     """
     Synchronize two signals by computing cross-correlation.
-    
+
     Args:
         sig1: numpy array, reference signal
         sig2: numpy array, signal to be shifted
-    
+
     Returns:
         lag: number of samples sig2 is shifted relative to sig1 (+ means sig2 delayed)
     """
@@ -181,7 +242,7 @@ def comparison_joint_angles(
     """
     path_mocap = comfi_root / mocap_dir / subject_id / task / mocap_angles_file
     path_ik = output_root / subject_id / task / ik_angles_file
-    
+
     if not path_mocap.exists():
         raise FileNotFoundError(f"Missing mocap angles file: {path_mocap}")
     if not path_ik.exists():
@@ -198,14 +259,18 @@ def comparison_joint_angles(
     # Ensure same length
     min_len = min(df_ik.shape[0], df_mocap.shape[0])
     if df_ik.shape[0] != df_mocap.shape[0]:
-        print(f"[WARNING] Length mismatch: IK={df_ik.shape[0]}, Mocap={df_mocap.shape[0]}. Truncating to {min_len}")
+        print(
+            f"[WARNING] Length mismatch: IK={df_ik.shape[0]}, Mocap={df_mocap.shape[0]}. Truncating to {min_len}"
+        )
         df_ik = df_ik.iloc[:min_len, :]
         df_mocap = df_mocap.iloc[:min_len, :]
 
     # Temporal synchronization using specified joint
     print(f"[INFO] Synchronizing signals using joint: {sync_joint}")
     if sync_joint not in df_ik.columns or sync_joint not in df_mocap.columns:
-        print(f"[WARNING] Sync joint '{sync_joint}' not found. Skipping synchronization.")
+        print(
+            f"[WARNING] Sync joint '{sync_joint}' not found. Skipping synchronization."
+        )
         lag = 0
     else:
         knee_ik = df_ik[sync_joint].values
@@ -215,10 +280,10 @@ def comparison_joint_angles(
     # Apply lag correction
     if lag > 0:
         df_ik = df_ik.iloc[lag:, :].reset_index(drop=True)
-        df_mocap = df_mocap.iloc[:len(df_ik), :].reset_index(drop=True)
+        df_mocap = df_mocap.iloc[: len(df_ik), :].reset_index(drop=True)
     elif lag < 0:
-        df_mocap = df_mocap.iloc[abs(lag):, :].reset_index(drop=True)
-        df_ik = df_ik.iloc[:len(df_mocap), :].reset_index(drop=True)
+        df_mocap = df_mocap.iloc[abs(lag) :, :].reset_index(drop=True)
+        df_ik = df_ik.iloc[: len(df_mocap), :].reset_index(drop=True)
 
     q_ik = read_specific_joint(str(path_ik), DOFS, start_sample)
     q_mocap = read_specific_joint(str(path_mocap), DOFS, start_sample)
@@ -229,9 +294,11 @@ def comparison_joint_angles(
     q_mocap = q_mocap[:min_len, :]
 
     # Filter joints to compare
-    joint_indices = [i for i in range(start_dof, len(DOFS)) if DOFS[i] not in EXCLUDED_JOINTS]
+    joint_indices = [
+        i for i in range(start_dof, len(DOFS)) if DOFS[i] not in EXCLUDED_JOINTS
+    ]
     joint_names = [DOFS[i] for i in joint_indices]
-    
+
     print(f"[INFO] Comparing {len(joint_indices)} joints")
 
     # Compute metrics
@@ -278,19 +345,22 @@ def comparison_joint_angles(
                 fig_num = j // n_per_fig
 
             ax = axs[j % n_per_fig] if n_per_fig > 1 else axs
-            ax.plot(q_ik[:, i], label="IK", linewidth=2, color='green')
-            ax.plot(q_mocap[:, i], label="Mocap (GT)", linewidth=2, color='red')
-            ax.set_title(f"{name}\nRMSE: {rmse_deg:.2f}°, MAE: {mae_deg:.2f}°, Corr: {corr_coef:.3f}", fontsize=10)
+            ax.plot(q_ik[:, i], label="IK", linewidth=2, color="green")
+            ax.plot(q_mocap[:, i], label="Mocap (GT)", linewidth=2, color="red")
+            ax.set_title(
+                f"{name}\nRMSE: {rmse_deg:.2f}°, MAE: {mae_deg:.2f}°, Corr: {corr_coef:.3f}",
+                fontsize=10,
+            )
             ax.set_xlabel("Frame")
             ax.set_ylabel("Angle (rad)")
             ax.grid(True, alpha=0.3)
-            ax.legend(loc='best')
+            ax.legend(loc="best")
 
             # Save or show figure after every n_per_fig plots or at the end
             if (j % n_per_fig == n_per_fig - 1) or (j == len(joint_indices) - 1):
                 if save_plots:
                     fig_path = plot_dir / f"timeseries_{fig_num:02d}.png"
-                    plt.savefig(fig_path, dpi=150, bbox_inches='tight')
+                    plt.savefig(fig_path, dpi=150, bbox_inches="tight")
                     print(f"[SAVED] {fig_path}")
                 if show_plots:
                     plt.show()
@@ -302,25 +372,41 @@ def comparison_joint_angles(
         avg_rmse = np.mean(rmse_array)
 
         plt.figure(figsize=(14, 6))
-        bars = plt.bar(range(len(joint_names)), rmse_array, color='skyblue', edgecolor='black')
-        plt.xticks(range(len(joint_names)), joint_names, rotation=45, ha='right')
-        plt.axhline(avg_rmse, color='red', linestyle='--', linewidth=2, label=f'Average RMSE: {avg_rmse:.2f}°')
-        
+        bars = plt.bar(
+            range(len(joint_names)), rmse_array, color="skyblue", edgecolor="black"
+        )
+        plt.xticks(range(len(joint_names)), joint_names, rotation=45, ha="right")
+        plt.axhline(
+            avg_rmse,
+            color="red",
+            linestyle="--",
+            linewidth=2,
+            label=f"Average RMSE: {avg_rmse:.2f}°",
+        )
+
         # Add value annotations
         for idx, bar in enumerate(bars):
             height = bar.get_height()
-            plt.text(bar.get_x() + bar.get_width()/2, height + 0.5, f"{height:.1f}", 
-                     ha='center', va='bottom', fontsize=7)
+            plt.text(
+                bar.get_x() + bar.get_width() / 2,
+                height + 0.5,
+                f"{height:.1f}",
+                ha="center",
+                va="bottom",
+                fontsize=7,
+            )
 
         plt.ylabel("RMSE (degrees)", fontsize=12)
-        plt.title(f"Joint Angle RMSEs - {subject_id}/{task}", fontsize=14, fontweight='bold')
-        plt.grid(axis='y', linestyle='--', alpha=0.5)
+        plt.title(
+            f"Joint Angle RMSEs - {subject_id}/{task}", fontsize=14, fontweight="bold"
+        )
+        plt.grid(axis="y", linestyle="--", alpha=0.5)
         plt.legend(fontsize=11)
         plt.tight_layout()
 
         if save_plots:
             bar_path = plot_dir / "rmse_bar_chart.png"
-            plt.savefig(bar_path, dpi=150, bbox_inches='tight')
+            plt.savefig(bar_path, dpi=150, bbox_inches="tight")
             print(f"[SAVED] {bar_path}")
         if show_plots:
             plt.show()
@@ -337,13 +423,13 @@ def comparison_joint_angles(
     avg_mae = np.mean(mae_array)
     avg_corr = np.mean(corr_array)
 
-    print("\n" + "="*60)
+    print("\n" + "=" * 60)
     print(f"COMPARISON RESULTS - {subject_id}/{task}")
-    print("="*60)
+    print("=" * 60)
     print(f"Average RMSE:        {avg_rmse:.2f}° ± {std_rmse:.2f}°")
     print(f"Average MAE:         {avg_mae:.2f}°")
     print(f"Average Correlation: {avg_corr:.3f}")
-    print("="*60 + "\n")
+    print("=" * 60 + "\n")
 
     # Per-joint detailed results
     print("Per-joint metrics:")
@@ -360,7 +446,7 @@ def comparison_joint_angles(
 def main():
     args = parse_args()
     validate_inputs(args.subject_id, args.task)
-    
+
     comfi_root = Path(args.comfi_root).resolve()
     output_root = Path(args.output_root).resolve()
 
@@ -385,6 +471,7 @@ def main():
     except Exception as e:
         print(f"[ERROR] Comparison failed: {e}")
         import traceback
+
         traceback.print_exc()
         return 1
 
