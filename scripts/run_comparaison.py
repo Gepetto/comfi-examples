@@ -354,6 +354,28 @@ def comparison_joint_angles(
         unit_list.append(unit)
 
     # Plotting
+
+    # Summary statistics for angular DOFs only
+    angular_mask = np.array([name.endswith("[rad]") for name in joint_names])
+
+    angular_names = np.asarray(joint_names)[angular_mask]
+    angular_rmse = np.asarray(rmse_list)[angular_mask]
+    angular_mae = np.asarray(mae_list)[angular_mask]
+    angular_corr = np.asarray(corr_list)[angular_mask]
+
+    avg_rmse = np.mean(angular_rmse)
+    std_rmse = np.std(angular_rmse)
+    avg_mae = np.mean(angular_mae)
+    avg_corr = np.nanmean(angular_corr)
+
+    print("\n" + "=" * 60)
+    print(f"COMPARISON RESULTS - {subject_id}/{task}")
+    print("=" * 60)
+    print(f"Average joint RMSE:        {avg_rmse:.2f}° ± {std_rmse:.2f}°")
+    print(f"Average joint MAE:         {avg_mae:.2f}°")
+    print(f"Average joint correlation: {avg_corr:.3f}")
+    print("=" * 60 + "\n")
+
     if show_plots or save_plots:
         plot_dir = None
         if save_plots:
@@ -389,7 +411,14 @@ def comparison_joint_angles(
                 fontsize=10,
             )
             ax.set_xlabel("Frame")
-            ax.set_ylabel("ylabel")
+            if name.endswith("[rad]"):
+                ylabel = "Angle (rad)"
+            elif name.endswith("[m]"):
+                ylabel = "Position (m)"
+            else:
+                ylabel = "Quaternion component"
+
+            ax.set_ylabel(ylabel)
             ax.grid(True, alpha=0.3)
             ax.legend(loc="best")
 
@@ -493,24 +522,6 @@ def comparison_joint_angles(
             plt.show()
         else:
             plt.close()
-
-    # Print summary statistics
-    rmse_array = np.array(rmse_list)
-    mae_array = np.array(mae_list)
-    corr_array = np.array(corr_list)
-
-    avg_rmse = np.mean(rmse_array)
-    std_rmse = np.std(rmse_array)
-    avg_mae = np.mean(mae_array)
-    avg_corr = np.mean(corr_array)
-
-    print("\n" + "=" * 60)
-    print(f"COMPARISON RESULTS - {subject_id}/{task}")
-    print("=" * 60)
-    print(f"Average RMSE:        {avg_rmse:.2f}° ± {std_rmse:.2f}°")
-    print(f"Average MAE:         {avg_mae:.2f}°")
-    print(f"Average Correlation: {avg_corr:.3f}")
-    print("=" * 60 + "\n")
 
     # Per-joint detailed results
     print("Per-joint metrics:")
