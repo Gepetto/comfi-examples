@@ -153,7 +153,7 @@ python scripts/run_ik.py \
        --ik-solver ipopt
 ```
 
-9. **Comparison of joint angles estimated from Mocap (Vicon as reference) and from markerless 4-camera HPE with LSTM-based augmentation**
+10. **Comparison of joint angles estimated from Mocap (Vicon as reference) and from markerless 4-camera HPE with LSTM-based augmentation**
 
 Performs temporal synchronization, computes RMSE/MAE/correlation metrics, and generates comparison plots. Used to validate markerless motion capture accuracy against gold-standard mocap systems.
 ```bash

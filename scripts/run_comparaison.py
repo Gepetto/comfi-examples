@@ -273,23 +273,38 @@ def comparison_joint_angles(
         )
         lag = 0
     else:
-        knee_ik = df_ik[sync_joint].values
-        knee_mocap = df_mocap[sync_joint].values
+        knee_ik = df_ik[sync_joint].to_numpy()
+        knee_mocap = df_mocap[sync_joint].to_numpy()
+
         lag = synchronize_signals(knee_ik, knee_mocap)
 
-    # Apply lag correction
+    print(f"[INFO] Temporal lag: {lag} frames")
+
+    # Load joint trajectories
+    q_ik = read_specific_joint(
+        str(path_ik),
+        DOFS,
+        start_sample,
+    )
+
+    q_mocap = read_specific_joint(
+        str(path_mocap),
+        DOFS,
+        start_sample,
+    )
+
+    # Apply temporal synchronization
     if lag > 0:
-        df_ik = df_ik.iloc[lag:, :].reset_index(drop=True)
-        df_mocap = df_mocap.iloc[: len(df_ik), :].reset_index(drop=True)
+        # IK is delayed relative to mocap
+        q_ik = q_ik[lag:, :]
+
     elif lag < 0:
-        df_mocap = df_mocap.iloc[abs(lag) :, :].reset_index(drop=True)
-        df_ik = df_ik.iloc[: len(df_mocap), :].reset_index(drop=True)
+        # Mocap is delayed relative to IK
+        q_mocap = q_mocap[-lag:, :]
 
-    q_ik = read_specific_joint(str(path_ik), DOFS, start_sample)
-    q_mocap = read_specific_joint(str(path_mocap), DOFS, start_sample)
-
-    # Apply same truncation/lag to q arrays
+    # Ensure the same length after synchronization
     min_len = min(q_ik.shape[0], q_mocap.shape[0])
+
     q_ik = q_ik[:min_len, :]
     q_mocap = q_mocap[:min_len, :]
 
@@ -305,21 +320,38 @@ def comparison_joint_angles(
     rmse_list = []
     mae_list = []
     corr_list = []
+    unit_list = []
 
     for i in joint_indices:
-        # RMSE
-        rmse_rad = np.sqrt(np.mean((q_mocap[:, i] - q_ik[:, i]) ** 2))
-        rmse_deg = rmse_rad * (180 / np.pi)
-        rmse_list.append(rmse_deg)
+        name = DOFS[i]
 
-        # MAE
-        mae_rad = np.mean(np.abs(q_mocap[:, i] - q_ik[:, i]))
-        mae_deg = mae_rad * (180 / np.pi)
-        mae_list.append(mae_deg)
+        error = q_mocap[:, i] - q_ik[:, i]
 
-        # Correlation
-        corr_coef = np.corrcoef(q_mocap[:, i], q_ik[:, i])[0, 1]
+        rmse = np.sqrt(np.mean(error**2))
+        mae = np.mean(np.abs(error))
+
+        # Convert only angular DOFs from radians to degrees
+        if name.endswith("[rad]"):
+            rmse = np.rad2deg(rmse)
+            mae = np.rad2deg(mae)
+            unit = "°"
+
+        elif name.endswith("[m]"):
+            unit = "m"
+
+        else:
+            # Quaternion components are dimensionless
+            unit = ""
+
+        corr_coef = np.corrcoef(
+            q_mocap[:, i],
+            q_ik[:, i],
+        )[0, 1]
+
+        rmse_list.append(rmse)
+        mae_list.append(mae)
         corr_list.append(corr_coef)
+        unit_list.append(unit)
 
     # Plotting
     if show_plots or save_plots:
@@ -333,10 +365,12 @@ def comparison_joint_angles(
         n_per_fig = plots_per_figure
         for j, i in enumerate(joint_indices):
             name = DOFS[i]
-            rmse_deg = rmse_list[j]
-            rmse_rad = rmse_deg * (np.pi / 180)
-            mae_deg = mae_list[j]
+            rmse = rmse_list[j]
+            mae = mae_list[j]
             corr_coef = corr_list[j]
+            unit = unit_list[j]
+
+            unit_suffix = f" {unit}" if unit else ""
 
             # Create new figure every n_per_fig plots
             if j % n_per_fig == 0:
@@ -348,11 +382,14 @@ def comparison_joint_angles(
             ax.plot(q_ik[:, i], label="IK", linewidth=2, color="green")
             ax.plot(q_mocap[:, i], label="Mocap (GT)", linewidth=2, color="red")
             ax.set_title(
-                f"{name}\nRMSE: {rmse_deg:.2f}°, MAE: {mae_deg:.2f}°, Corr: {corr_coef:.3f}",
+                f"{name}\n"
+                f"RMSE: {rmse:.2f}{unit_suffix}, "
+                f"MAE: {mae:.2f}{unit_suffix}, "
+                f"Corr: {corr_coef:.3f}",
                 fontsize=10,
             )
             ax.set_xlabel("Frame")
-            ax.set_ylabel("Angle (rad)")
+            ax.set_ylabel("ylabel")
             ax.grid(True, alpha=0.3)
             ax.legend(loc="best")
 
@@ -368,14 +405,56 @@ def comparison_joint_angles(
                     plt.close(fig)
 
         # Bar chart of RMSEs
-        rmse_array = np.array(rmse_list)
-        avg_rmse = np.mean(rmse_array)
+        # rmse_array = np.array(rmse_list)
+        # avg_rmse = np.mean(rmse_array)
+
+        angular_mask = np.array([name.endswith("[rad]") for name in joint_names])
+
+        angular_rmse = np.asarray(rmse_list)[angular_mask]
+        angular_mae = np.asarray(mae_list)[angular_mask]
+        angular_corr = np.asarray(corr_list)[angular_mask]
+
+        avg_rmse = np.mean(angular_rmse)
+        std_rmse = np.std(angular_rmse)
+        avg_mae = np.mean(angular_mae)
+        avg_corr = np.nanmean(angular_corr)
+
+        print("\n" + "=" * 60)
+        print(f"COMPARISON RESULTS - {subject_id}/{task}")
+        print("=" * 60)
+        print(f"Average joint RMSE:        {avg_rmse:.2f}° ± {std_rmse:.2f}°")
+        print(f"Average joint MAE:         {avg_mae:.2f}°")
+        print(f"Average joint correlation: {avg_corr:.3f}")
+        print("=" * 60)
+
+        angular_names = [name for name in joint_names if name.endswith("[rad]")]
+
+        angular_rmse = np.array(
+            [
+                rmse
+                for name, rmse in zip(joint_names, rmse_list)
+                if name.endswith("[rad]")
+            ]
+        )
+
+        avg_rmse = np.mean(angular_rmse)
 
         plt.figure(figsize=(14, 6))
+
         bars = plt.bar(
-            range(len(joint_names)), rmse_array, color="skyblue", edgecolor="black"
+            range(len(angular_names)),
+            angular_rmse,
+            color="skyblue",
+            edgecolor="black",
         )
-        plt.xticks(range(len(joint_names)), joint_names, rotation=45, ha="right")
+
+        plt.xticks(
+            range(len(angular_names)),
+            angular_names,
+            rotation=45,
+            ha="right",
+        )
+
         plt.axhline(
             avg_rmse,
             color="red",
@@ -383,6 +462,8 @@ def comparison_joint_angles(
             linewidth=2,
             label=f"Average RMSE: {avg_rmse:.2f}°",
         )
+
+        plt.ylabel("RMSE (degrees)")
 
         # Add value annotations
         for idx, bar in enumerate(bars):
@@ -433,11 +514,13 @@ def comparison_joint_angles(
 
     # Per-joint detailed results
     print("Per-joint metrics:")
-    print(f"{'Joint':<50} {'RMSE (°)':>10} {'MAE (°)':>10} {'Corr':>8}")
-    print("-" * 80)
-    for name, rmse, mae, corr in zip(joint_names, rmse_list, mae_list, corr_list):
-        print(f"{name:<50} {rmse:>10.2f} {mae:>10.2f} {corr:>8.3f}")
-    print("-" * 80 + "\n")
+    print(f"{'DOF':<50} {'RMSE':>10} {'MAE':>10} {'Unit':>8} {'Corr':>8}")
+    print("-" * 90)
+
+    for name, rmse, mae, unit, corr in zip(
+        joint_names, rmse_list, mae_list, unit_list, corr_list
+    ):
+        print(f"{name:<50} {rmse:>10.3f} {mae:>10.3f} {unit:>8} {corr:>8.3f}")
 
     print(f"[SUCCESS] {subject_id}/{task} comparison complete")
     return True
